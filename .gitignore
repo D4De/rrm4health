@@ -1,0 +1,13 @@
+__pycache__
+LOG_online
+LOG_offline
+LOG
+# Descriptors/
+# !Descriptors/.gitkeep
+# Applications/
+# !Applications/.gitkeep
+venv_*
+output/
+/.run_processes/
+/LOG_processes/
+webapp/target

@@ -1,0 +1,26 @@
+{
+  "name": "Two Real Foot IMUs - Wi-Fi - RAW",
+  "description": "Live 100 Hz Wi-Fi RAW acquisition. Replace the IMU identifiers and IP addresses with the hardware values.",
+  "userargs": {
+    "imu_names": "E0:72:A1:21:6A:20-E0:72:A1:21:39:60",
+    "sensor_positions": "left_foot-right_foot",
+    "wifi_interface": "wlan0",
+    "wifi_ssid": "WIFI_126",
+    "wifi_password": "126_WIFI",
+    "wifi_port": "8023",
+    "acquisition_mode": "wifi",
+    "input_path": "",
+    "subject_id": "live_subject",
+    "trial_id": "live_gait_trial",
+    "campaign_name": "live_gait_campaign",
+    "initial_counter": "0",
+    "sampling_frequency_hz": "100",
+    "window_duration_s": "20",
+    "window_overlap_s": "2",
+    "lowpass_cutoff_hz": "20",
+    "lightweight_mode": "false",
+    "barth_max_cost": "4.0",
+    "minimum_complete_strides": "3",
+    "output_path": "output/live_wifi_full/"
+  }
+}

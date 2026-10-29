@@ -1,0 +1,15 @@
+{
+  "name": "Example 2: Three IMUs Configuration",
+  "description": "Configuration for breath analysis with three IMU sensors and database output",
+  "userargs": {
+    "imunames": "IMUXEXA-IMU747A-IMUABC1",
+    "peripheral_locations": "torace-addome-riferimento",
+    "adapter": "hci0",
+    "campaignname": "breath_campaign_002",
+    "samplingfreq": "10",
+    "method_output": "DB",
+    "path_FILE": "",
+    "host_DB": "localhost",
+    "port_DB": "1883"
+  }
+}

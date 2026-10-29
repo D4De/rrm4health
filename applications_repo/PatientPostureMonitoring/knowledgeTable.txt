@@ -1,0 +1,8 @@
+            "x86_64_6_4056.0_battery": {
+                "core": 4
+                "target_fps": 10
+                "heavy": True
+                "cpu_percentage": 65.70635443951963,
+                "core_avg_frequency": 2347.7612198186735,
+                "power_usage_estimate": 0.0
+            }

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAMPAIGN | Dettagli Campagna</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="min-h-screen bg-base-200">
+<!-- Dettagli campagna: riepilogo, filtri storico e grafici per assi. -->
+
+<div class="navbar bg-base-100 shadow-md px-4">
+    <div class="flex-1">
+        <div class="flex items-center gap-3">
+            <div class="avatar">
+                <div class="w-10 rounded-full bg-base-200 flex items-center justify-center overflow-hidden">
+                    <img src="/images/sensor-icon.svg" alt="BSN" class="w-6 h-6"/>
+                </div>
+            </div>
+            <div>
+                <a href="/" class="text-lg font-bold hover:text-primary">CAMPAIGN</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-none">
+        <div class="dropdown dropdown-end">
+            <label tabindex="0" class="btn btn-ghost normal-case">
+                <div class="flex flex-col items-end leading-tight">
+                    <div class="font-semibold" th:text="${#authentication.name}">username</div>
+                </div>
+            </label>
+
+            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-56">
+                <li class="pointer-events-none opacity-70">
+                    <a class="flex justify-between">
+                        <span class="font-semibold">Utente</span>
+                        <span th:text="${#authentication.name}">username</span>
+                    </a>
+                </li>
+
+                <li class="mt-2">
+                    <form th:action="@{/logout}" method="post" class="w-full">
+                        <button type="submit" class="btn btn-error btn-sm w-full">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<main class="max-w-full mx-auto p-4 lg:p-6" id="campaignHistoryRoot"
+      th:attr="data-campaign-id=${campagna.id},data-start-time=${campagna.dataInizio},data-end-time=${campagna.dataFine}">
+
+    <div class="text-sm breadcrumbs mb-4">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/campagne/tutte">Tutte le Campagne</a></li>
+            <li>Dettagli</li>
+        </ul>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl mb-6">
+        <div class="card-body">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div>
+                    <h2 class="card-title text-2xl" th:text="${campagna.nome}">Campagna</h2>
+                    <div class="mt-1 text-lg text-gray-500">
+                        <span class="font-medium">Tipo campagna:</span>
+                        <span th:if="${#lists.isEmpty(campagna.tipiCampagna)}">-</span>
+                        <span th:each="tipo, iter : ${campagna.tipiCampagna}"
+                              th:text="${tipo.codice + (iter.last ? '' : ', ')}"
+                              th:title="${tipo.descrizione}">
+                            IMU
+                        </span>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 text-sm">
+                    <button id="historyImuDownload" type="button" class="btn btn-outline btn-sm">
+                        Scarica dati IMU
+                    </button>
+                    <button id="historyOutputDownload" type="button" class="btn btn-primary btn-sm">
+                        Scarica output
+                    </button>
+                    <span class="badge"
+                          th:classappend="${campagna.stato.name() == 'IN_CORSO'} ? ' badge-success' : (${campagna.stato.name() == 'AVVIO_IN_CORSO'} ? ' badge-warning' : (${campagna.stato.name() == 'AVVIO_FALLITO'} ? ' badge-error' : ' badge-ghost'))"
+                          th:text="${campagna.stato}">IN_CORSO</span>
+                    <span class="badge badge-outline" th:text="${campagna.dataInizio != null ? #temporals.format(campagna.dataInizio, 'dd/MM/yyyy HH:mm') : '-'}">-</span>
+                    <span class="badge badge-outline" th:text="${campagna.dataFine != null ? #temporals.format(campagna.dataFine, 'dd/MM/yyyy HH:mm') : '-'}">-</span>
+                </div>
+            </div>
+
+            <div class="divider my-4"></div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-[200px_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] gap-4">
+                <div class="card bg-neutral/70 text-neutral-content border border-neutral-content/10">
+                    <div class="card-body p-4">
+                        <h4 class="font-semibold uppercase tracking-widest text-xs text-neutral-content/60">Sensori</h4>
+                        <div id="historySensorList" class="space-y-1 text-xs">
+                            <div th:each="s : ${campagna.sensori}" class="flex items-center gap-2"
+                                 th:attr="data-sensor=${s.codice},data-location=${s.location}">
+                                <span class="inline-block w-1.5 h-1.5 rounded-full bg-neutral-content/40"></span>
+                                <span>
+                                    <span class="font-mono" th:text="${s.codice}">XEXA</span>
+                                    <span class="text-neutral-content/50"
+                                          th:if="${s.location != null && !#strings.isEmpty(s.location)}"
+                                          th:text="${'— ' + s.location}">— polso destro</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="historyFiltersCard" class="card bg-base-200 text-base-content lg:col-span-2">
+                    <div class="card-body p-4">
+                        <h4 class="font-semibold uppercase tracking-widest text-xs text-gray-500">Filtri</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div class="form-control md:col-span-2">
+                                <label class="label text-xs text-gray-500">Sensori</label>
+                                <div id="historySensorChecks" class="flex flex-wrap gap-2 text-xs">
+                                    <label class="flex items-center gap-2 bg-base-100 rounded px-2 py-1 border border-base-300"
+                                           th:each="s : ${campagna.sensori}">
+                                        <input type="checkbox" name="historySensors" class="checkbox checkbox-xs" th:value="${s.codice}" checked />
+                                        <span>
+                                            <span class="font-mono" th:text="${s.codice}">XEXA</span>
+                                            <span class="text-gray-500"
+                                                  th:if="${s.location != null && !#strings.isEmpty(s.location)}"
+                                                  th:text="${'— ' + s.location}">— polso destro</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-control">
+                                <label class="label text-xs text-gray-500">Punti</label>
+                                <input id="historyLimit" type="number" min="1" max="5000" value="1000" class="input input-bordered input-sm" />
+                            </div>
+                            <div class="form-control md:col-span-2">
+                                <label class="label text-xs text-gray-500">Database</label>
+                                <select id="historyDbSelect" class="select select-bordered select-sm">
+                                    <option value="">Database salvato nella campagna</option>
+                                    <option th:each="db : ${databaseConfigs}"
+                                            th:value="${db.id}"
+                                            th:text="${db.nome + ' — ' + db.host + ' (' + db.dbName + ')'}">
+                                        DB
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-control">
+                                <label class="label text-xs text-gray-500">Azioni</label>
+                                <button id="historyRefresh" class="btn btn-primary btn-sm">Aggiorna</button>
+                            </div>
+                            <div class="form-control md:col-span-3">
+                                <label class="label text-xs text-gray-500">Tempo</label>
+                                <div class="flex items-center gap-3">
+                                    <input id="historyTimeRange" type="range" min="0" max="0" value="0"
+                                           class="range range-xs flex-1" />
+                                    <span id="historyTimeLabel" class="text-xs text-gray-500 w-12 text-right">00:00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card bg-base-200 text-base-content">
+                    <div class="card-body p-4">
+                        <h4 class="font-semibold uppercase tracking-widest text-xs text-gray-500">Frequenza</h4>
+                        <div class="text-2xl font-semibold mt-1" th:text="${campagna.frequenza != null ? campagna.frequenza + ' Hz' : '-'}">
+                            50 Hz
+                        </div>
+                        <p class="text-xs text-gray-500">Campionamento impostato per la campagna.</p>
+                    </div>
+                </div>
+                <div class="card bg-base-200 text-base-content">
+                    <div class="card-body p-4">
+                        <h4 class="font-semibold uppercase tracking-widest text-xs text-gray-500">Durata</h4>
+                        <div class="text-2xl font-semibold mt-1" th:text="${campagna.durataTotale != null ? campagna.durataTotale : '-'}">
+                            00:00:00
+                        </div>
+                        <p class="text-xs text-gray-500">Durata effettiva della campagna.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4"
+                 th:if="${(campagna.note != null && !#strings.isEmpty(campagna.note) && !#strings.startsWith(campagna.note, '[SYSTEM]')) || (campagna.notePersona != null && !#strings.isEmpty(campagna.notePersona))}">
+                <div class="card bg-base-200 text-base-content"
+                     th:if="${campagna.note != null && !#strings.isEmpty(campagna.note) && !#strings.startsWith(campagna.note, '[SYSTEM]')}">
+                    <div class="card-body">
+                        <h4 class="font-semibold uppercase tracking-widest text-xs text-gray-500">Note campagna</h4>
+                        <p class="text-sm text-gray-600" th:text="${campagna.note}">Nota campagna</p>
+                    </div>
+                </div>
+                <div class="card bg-base-200 text-base-content"
+                     th:if="${campagna.notePersona != null && !#strings.isEmpty(campagna.notePersona)}">
+                    <div class="card-body">
+                        <h4 class="font-semibold uppercase tracking-widest text-xs text-gray-500">Note paziente</h4>
+                        <p class="text-sm text-gray-600" th:text="${campagna.notePersona}">Nota paziente</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="breathAnalysisOutput" class="card bg-base-100 shadow-xl mb-6"
+         th:if="${isBreathAnalysis}">
+        <div class="card-body">
+            <div>
+                <h3 class="card-title text-xl">Risultati BreathAnalysis</h3>
+                <p class="text-sm text-gray-500">
+                    Dati prodotti dall’applicazione e salvati nel database Influx della campagna.
+                </p>
+            </div>
+            <div id="breathAnalysisMessage" class="text-sm text-gray-500">
+                Caricamento dati...
+            </div>
+            <div id="breathAnalysisTableWrapper" class="overflow-x-auto hidden">
+                <table class="table table-zebra table-sm">
+                    <thead id="breathAnalysisTableHead"></thead>
+                    <tbody id="breathAnalysisTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="breathAnalysisFiltersSlot" class="mb-6" th:if="${isBreathAnalysis}"></div>
+
+    <div class="mb-4 flex items-center justify-end">
+        <label class="form-control w-full max-w-xs">
+            <div class="label py-0 pb-2">
+                <span class="label-text text-gray-500 text-xs uppercase tracking-widest">Vista grafici</span>
+            </div>
+            <select id="historyChartLayoutSelect" class="select select-sm select-bordered">
+                <option value="axis">Per asse</option>
+                <option value="sensor">Per IMU</option>
+            </select>
+        </label>
+    </div>
+
+    <div id="historyChartsAxisView" class="space-y-6">
+        <div class="card bg-neutral/70 border border-neutral-content/10">
+            <div class="card-body gap-4">
+                <div class="flex items-center justify-between">
+                    <h4 class="font-semibold uppercase tracking-widest text-xs text-neutral-content/70">Accelerometro</h4>
+                    <div class="text-xs text-neutral-content/40 uppercase tracking-widest">m/s^2</div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div class="rounded-xl border border-neutral-content/10 bg-neutral/90 p-3">
+                        <div class="text-xs uppercase tracking-widest text-neutral-content/50 mb-2">X</div>
+                        <div class="h-28">
+                            <canvas id="history-ax" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+                    <div class="rounded-xl border border-neutral-content/10 bg-neutral/90 p-3">
+                        <div class="text-xs uppercase tracking-widest text-neutral-content/50 mb-2">Y</div>
+                        <div class="h-28">
+                            <canvas id="history-ay" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+                    <div class="rounded-xl border border-neutral-content/10 bg-neutral/90 p-3">
+                        <div class="text-xs uppercase tracking-widest text-neutral-content/50 mb-2">Z</div>
+                        <div class="h-28">
+                            <canvas id="history-az" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card bg-neutral/70 border border-neutral-content/10">
+            <div class="card-body gap-4">
+                <div class="flex items-center justify-between">
+                    <h4 class="font-semibold uppercase tracking-widest text-xs text-neutral-content/70">Giroscopio</h4>
+                    <div class="text-xs text-neutral-content/40 uppercase tracking-widest">deg/s</div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div class="rounded-xl border border-neutral-content/10 bg-neutral/90 p-3">
+                        <div class="text-xs uppercase tracking-widest text-neutral-content/50 mb-2">X</div>
+                        <div class="h-28">
+                            <canvas id="history-gx" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+                    <div class="rounded-xl border border-neutral-content/10 bg-neutral/90 p-3">
+                        <div class="text-xs uppercase tracking-widest text-neutral-content/50 mb-2">Y</div>
+                        <div class="h-28">
+                            <canvas id="history-gy" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+                    <div class="rounded-xl border border-neutral-content/10 bg-neutral/90 p-3">
+                        <div class="text-xs uppercase tracking-widest text-neutral-content/50 mb-2">Z</div>
+                        <div class="h-28">
+                            <canvas id="history-gz" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card bg-neutral/70 border border-neutral-content/10">
+            <div class="card-body gap-4">
+                <div class="flex items-center justify-between">
+                    <h4 class="font-semibold uppercase tracking-widest text-xs text-neutral-content/70">Magnetometro</h4>
+                    <div class="text-xs text-neutral-content/40 uppercase tracking-widest">uT</div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div class="rounded-xl border border-neutral-content/10 bg-neutral/90 p-3">
+                        <div class="text-xs uppercase tracking-widest text-neutral-content/50 mb-2">X</div>
+                        <div class="h-28">
+                            <canvas id="history-mx" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+                    <div class="rounded-xl border border-neutral-content/10 bg-neutral/90 p-3">
+                        <div class="text-xs uppercase tracking-widest text-neutral-content/50 mb-2">Y</div>
+                        <div class="h-28">
+                            <canvas id="history-my" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+                    <div class="rounded-xl border border-neutral-content/10 bg-neutral/90 p-3">
+                        <div class="text-xs uppercase tracking-widest text-neutral-content/50 mb-2">Z</div>
+                        <div class="h-28">
+                            <canvas id="history-mz" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="historyChartsSensorView" class="hidden space-y-6">
+        <div id="historySensorChartsContainer" class="space-y-6"></div>
+    </div>
+</main>
+
+<script th:src="@{/js/campagna-history.js}"></script>
+
+</body>
+</html>

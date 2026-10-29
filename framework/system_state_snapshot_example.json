@@ -1,0 +1,183 @@
+{
+  "snapshot_timestamp_utc": "2026-05-04T12:00:00Z",
+  "architecture": {
+    "nodes": [
+      {
+        "node_endpoint": {
+          "ip": "192.168.1.78",
+          "port": 37523,
+          "type": "wifi"
+        },
+        "node_status": "READY",
+        "logical_node_id": "rp1",
+        "node_type_id": "raspberry_pi_4b_4gb",
+        "description": "Edge node based on Raspberry Pi 4 Model B for BLE acquisition and local preprocessing",
+        "max_temperature": 80.0,
+        "max_network_speed": 940.0,
+        "status": {
+          "cpu_percentage": 19.344444444444445,
+          "cpu_frequency": 2.333564814814815,
+          "battery_percentage": 100.0,
+          "is_connected_to_power": true,
+          "temperature": 36.85000000000001,
+          "memory_used_mb": 3224,
+          "memory_available_mb": 872,
+          "disk_used_gb": 16.6,
+          "disk_available_gb": 111.4,
+          "power_consumption_w": 4.3,
+          "memory_percentage": 78.72222222222223,
+          "upload_speed": 2008.2802559729753,
+          "download_speed": 1430.7899210790094
+        },
+
+        "location": {
+          "building": "B10",
+          "floor": "0",
+          "room": "LAB-0.01",
+          "zone": "gateway"
+        },
+        "connected_resources": {
+          "usb": [
+            {
+              "resource_id": "hci1",
+              "type": "External_Bluetooth_Antenna_Generic",
+              "status": "ACTIVE"
+            }
+          ],
+          "ble": [
+            {
+              "resource_id": "IMUX",
+              "type": "Arduino_33_BLE",
+              "status": "ACTIVE"
+            },
+            {
+              "resource_id": "IMUY",
+              "type": "Arduino_33_BLE",
+              "status": "ACTIVE"
+            },
+            {
+              "resource_id": "IMUZ",
+              "type": "Arduino_33_BLE",
+              "status": "ACTIVE"
+            }
+          ]
+        },
+        "running_partitions": [
+          ["task1", "applA", 0],
+          ["task2", "applB", 0]
+        ]
+      },
+      {
+        "node_endpoint": {
+          "ip": "192.168.1.78",
+          "port": 54991,
+          "type": "wifi"
+        },
+        "node_status": "READY",
+        "logical_node_id": "lenovo_cysko",
+        "node_type_id": "lenovo_v15_g2_alc",
+        "description": "Edge node based on Lenovo V15 G2 ALC laptop for BLE/Wi-Fi acquisition and local preprocessing",
+        "max_temperature": 95.0,
+        "max_network_speed": 1000.0,
+        "status": {
+          "cpu_percentage": 20.411111111111115,
+          "cpu_frequency": 2.551361111111111,
+          "battery_percentage": 100.0,
+          "is_connected_to_power": true,
+          "temperature": 36.85000000000001,
+          "memory_used_mb": 7908,
+          "memory_available_mb": 1896,
+          "disk_used_gb": 16.7,
+          "disk_available_gb": 495.3,
+          "power_consumption_w": 18.5,
+          "memory_percentage": 80.6222222222222,
+          "upload_speed": 3374.367150826989,
+          "download_speed": 6531.454075190617
+        },
+        "location": {
+          "building": "B10",
+          "floor": "2",
+          "room": "LAB-2.14",
+          "zone": "office"
+        },
+        "connected_resources": {},
+        "running_partitions": [
+          ["task2", "applA", 0],
+          ["task1", "applB", 0]
+        ]
+      }
+    ]
+  },
+  "workload": {
+    "running_apps": [
+      {
+        "app_id": [
+          "applA",
+          0
+        ],
+        "parameters": {
+          "param1": "value1",
+          "param2": "value2"
+        },
+        "tasks": [
+          {
+            "task_id": "task1",
+            "details": {}
+          },
+          {
+            "task_id": "task2",
+            "details": {}
+          }
+        ],
+        "channels_config": [
+          {
+            "from_partition": "task1",
+            "to_partition": "task2",
+            "type": "network_socket",
+            "parameters": {
+              "ip_src": "192.168.1.78",
+              "port_src": "38901",
+              "ip_dst": "192.168.1.78",
+              "port_dst": "38902",
+              "protocol": "tcp"
+            }
+          }
+        ]
+      },
+      {
+        "app_id": [
+          "applB",
+          0
+        ],
+        "parameters": {
+          "param1": "value1",
+          "param2": "value2"
+        },
+        "tasks": [
+          {
+            "task_id": "task1",
+            "details": {}
+          },
+          {
+            "task_id": "task2",
+            "details": {}
+          }
+        ],
+        "channels_config": [
+          {
+            "from_partition": "task1",
+            "to_partition": "task2",
+            "type": "network_socket",
+            "parameters": {
+              "ip_src": "192.168.1.78",
+              "port_src": "38911",
+              "ip_dst": "192.168.1.78",
+              "port_dst": "38912",
+              "protocol": "tcp"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

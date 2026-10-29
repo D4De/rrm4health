@@ -1,0 +1,163 @@
+{
+  "snapshot_timestamp_utc": "2026-05-10T12:00:00Z",
+  "scope": "global",
+  "rrm_global": {
+    "endpoint": {
+      "ip": "192.168.1.10",
+      "port": 7000,
+      "type": "wifi"
+    },
+    "status": "READY",
+    "nodes_total": 2,
+    "nodes_ready": 2,
+    "nodes_disconnected": 0
+  },
+  "nodes": [
+    {
+      "logical_node_id": "rp1",
+      "node_type_id": "raspberry_pi_4b_4gb",
+      "endpoint": {
+        "ip": "192.168.1.78",
+        "port": 37523
+      },
+      "node_status": "READY",
+      "online": true,
+      "location": {
+        "building": "B10",
+        "floor": "0",
+        "room": "LAB-0.01",
+        "zone": "gateway"
+      },
+      "resources": {
+        "connected_count": 4,
+        "connected_resources": [
+          {
+            "resource_id": "hci1",
+            "type": "External_Bluetooth_Antenna_Generic",
+            "status": "ACTIVE"
+          },
+          {
+            "resource_id": "IMUX",
+            "type": "Arduino_33_BLE",
+            "status": "ACTIVE"
+          },
+          {
+            "resource_id": "IMUY",
+            "type": "Arduino_33_BLE",
+            "status": "ACTIVE"
+          },
+          {
+            "resource_id": "IMUZ",
+            "type": "Arduino_33_BLE",
+            "status": "ACTIVE"
+          }
+        ]
+      },
+      "runtime_summary": {
+        "cpu_percentage": 19.34,
+        "memory_percentage": 78.72,
+        "temperature": 36.85,
+        "upload_speed": 2008.28,
+        "download_speed": 1430.79,
+        "last_update_utc": "2026-05-10T11:59:58Z"
+      },
+      "running_partitions": [
+        ["task1", "applA", 0],
+        ["task2", "applB", 0]
+      ]
+    },
+    {
+      "logical_node_id": "lenovo_cysko",
+      "node_type_id": "lenovo_v15_g2_alc",
+      "endpoint": {
+        "ip": "192.168.1.78",
+        "port": 54991,
+        "type": "wifi"
+      },
+      "node_status": "READY",
+      "online": true,
+      "location": {
+        "building": "B10",
+        "floor": "2",
+        "room": "LAB-2.14",
+        "zone": "office"
+      },
+      "resources": {
+        "connected_count": 0,
+        "connected_resources": []
+      },
+      "runtime_summary": {
+        "cpu_percentage": 20.41,
+        "memory_percentage": 80.62,
+        "temperature": 36.85,
+        "upload_speed": 3374.37,
+        "download_speed": 6531.45,
+        "last_update_utc": "2026-05-10T11:59:58Z"
+      },
+      "running_partitions": [
+        ["task2", "applA", 0],
+        ["task1", "applB", 0]
+      ]
+    }
+  ],
+  "workload": {
+    "running_apps": [
+      {
+        "app_id": ["applA", 0],
+        "status": "RUNNING",
+        "partitions": [
+          {
+            "task_id": "task1",
+            "assigned_node": "rp1"
+          },
+          {
+            "task_id": "task2",
+            "assigned_node": "lenovo_cysko"
+          }
+        ],
+        "channels_config": [
+          {
+            "from_partition": "task1",
+            "to_partition": "task2",
+            "type": "network_socket",
+            "parameters": {
+              "ip_src": "192.168.1.78",
+              "port_src": "38901",
+              "ip_dst": "192.168.1.78",
+              "port_dst": "38902",
+              "protocol": "tcp"
+            }
+          }
+        ]
+      },
+      {
+        "app_id": ["applB", 0],
+        "status": "RUNNING",
+        "partitions": [
+          {
+            "task_id": "task1",
+            "assigned_node": "lenovo_cysko"
+          },
+          {
+            "task_id": "task2",
+            "assigned_node": "rp1"
+          }
+        ],
+        "channels_config": [
+          {
+            "from_partition": "task1",
+            "to_partition": "task2",
+            "type": "network_socket",
+            "parameters": {
+              "ip_src": "192.168.1.78",
+              "port_src": "38911",
+              "ip_dst": "192.168.1.78",
+              "port_dst": "38912",
+              "protocol": "tcp"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

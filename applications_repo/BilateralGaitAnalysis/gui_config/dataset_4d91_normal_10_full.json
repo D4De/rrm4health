@@ -1,0 +1,23 @@
+{
+  "name": "Dataset 4d91 - Normal 10 m - Full",
+  "description": "Short normal-speed trial for participant 4d91, replayed at the dataset's native 204.8 Hz rate, with temporal and spatial gait analysis enabled.",
+  "userargs": {
+    "imu_names": "dataset_left-dataset_right",
+    "sensor_positions": "left_foot-right_foot",
+    "adapter": "hci0",
+    "acquisition_mode": "file",
+    "input_path": "dataset/SensorPositionComparison2019-v1.0.0-beta",
+    "subject_id": "4d91",
+    "trial_id": "normal_10",
+    "campaign_name": "dataset_4d91_normal_10",
+    "initial_counter": "0",
+    "sampling_frequency_hz": "204.8",
+    "window_duration_s": "20",
+    "window_overlap_s": "2",
+    "lowpass_cutoff_hz": "20",
+    "lightweight_mode": "false",
+    "barth_max_cost": "4.0",
+    "minimum_complete_strides": "3",
+    "output_path": "output/4d91_normal_10_full/"
+  }
+}

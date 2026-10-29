@@ -1,0 +1,17 @@
+# Requirements for BreathAnalysis Application
+# Install with: pip install -r requirements.txt
+
+zmq
+
+# Bluetooth Low Energy communication
+bleak>=0.20.0
+
+# MQTT protocol for message publishing
+paho-mqtt>=1.6.0
+
+# Data processing and analysis
+numpy>=1.24.0
+pandas>=2.0.0
+scipy>=1.10.0
+scikit-learn>=1.2.0
+pyquaternion

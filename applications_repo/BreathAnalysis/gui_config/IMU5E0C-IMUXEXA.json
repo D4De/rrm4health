@@ -1,0 +1,14 @@
+{
+  "name": "IMU5E0C-IMUXEXA IMUs Configuration",
+  "description": "Configuration for breath analysis with IMU5E0C-IMUXEXA",
+  "userargs": {
+    "imunames": "IMU5E0C-IMUXEXA",
+    "adapter": "hci0",
+    "campaignname": "20251110am",
+    "samplingfreq": "10",
+    "method_output": "DB",
+    "path_FILE": "",
+    "host_DB": "131.175.120.117",
+    "port_DB": "1883"
+  }
+}

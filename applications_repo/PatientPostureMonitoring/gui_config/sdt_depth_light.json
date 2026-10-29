@@ -1,0 +1,12 @@
+{
+  "name": "SDT Depth - Light",
+  "description": "Continuous replay of the real SDT Depth test split at 5 FPS using the dynamically optimized MobileNetV2 model.",
+  "userargs": {
+    "dataset_path": "/home/cysko7927/SDT_dataset",
+    "heavy_mode": "false",
+    "num_threads": "4",
+    "target_fps": "5",
+    "loop_dataset": "true",
+    "output_path": "output/light/"
+  }
+}

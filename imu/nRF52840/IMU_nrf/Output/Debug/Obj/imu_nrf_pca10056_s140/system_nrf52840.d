@@ -1,0 +1,30 @@
+Output/Debug/Obj/imu_nrf_pca10056_s140/system_nrf52840.o: \
+ /home/cysko7927/IoMTEcoSystem/IMU/IMU_nRF52840/IMU_nrf/modules/nrfx/mdk/system_nrf52840.c \
+ /home/cysko7927/IoMTEcoSystem/IMU/IMU_nRF52840/IMU_nrf/modules/nrfx/mdk/system_nrf52.c \
+ /opt/SEGGER/segger_embedded_studio_8.20/include/stdint.h \
+ /opt/SEGGER/segger_embedded_studio_8.20/include/__SEGGER_RTL.h \
+ /opt/SEGGER/segger_embedded_studio_8.20/include/__SEGGER_RTL_ConfDefaults.h \
+ /opt/SEGGER/segger_embedded_studio_8.20/include/__SEGGER_RTL_Conf.h \
+ /opt/SEGGER/segger_embedded_studio_8.20/include/__SEGGER_RTL_Arm_Conf.h \
+ /opt/SEGGER/segger_embedded_studio_8.20/include/stdbool.h \
+ /home/cysko7927/IoMTEcoSystem/IMU/IMU_nRF52840/IMU_nrf/modules/nrfx/mdk/nrf.h \
+ /home/cysko7927/IoMTEcoSystem/IMU/IMU_nRF52840/IMU_nrf/modules/nrfx/mdk/nrf52840.h \
+ components/toolchain/cmsis/include/core_cm4.h \
+ components/toolchain/cmsis/include/cmsis_version.h \
+ components/toolchain/cmsis/include/cmsis_compiler.h \
+ components/toolchain/cmsis/include/cmsis_gcc.h \
+ components/toolchain/cmsis/include/mpu_armv7.h \
+ /home/cysko7927/IoMTEcoSystem/IMU/IMU_nRF52840/IMU_nrf/modules/nrfx/mdk/system_nrf52840.h \
+ /home/cysko7927/IoMTEcoSystem/IMU/IMU_nRF52840/IMU_nrf/modules/nrfx/mdk/nrf52840_bitfields.h \
+ /home/cysko7927/IoMTEcoSystem/IMU/IMU_nRF52840/IMU_nrf/modules/nrfx/mdk/nrf51_to_nrf52840.h \
+ /home/cysko7927/IoMTEcoSystem/IMU/IMU_nRF52840/IMU_nrf/modules/nrfx/mdk/nrf52_to_nrf52840.h \
+ /home/cysko7927/IoMTEcoSystem/IMU/IMU_nRF52840/IMU_nrf/modules/nrfx/mdk/compiler_abstraction.h \
+ /home/cysko7927/IoMTEcoSystem/IMU/IMU_nRF52840/IMU_nrf/modules/nrfx/mdk/nrf_peripherals.h \
+ /home/cysko7927/IoMTEcoSystem/IMU/IMU_nRF52840/IMU_nrf/modules/nrfx/mdk/nrf52840_peripherals.h \
+ /home/cysko7927/IoMTEcoSystem/IMU/IMU_nRF52840/IMU_nrf/modules/nrfx/mdk/nrf_erratas.h \
+ /home/cysko7927/IoMTEcoSystem/IMU/IMU_nRF52840/IMU_nrf/modules/nrfx/mdk/nrf51_erratas.h \
+ /home/cysko7927/IoMTEcoSystem/IMU/IMU_nRF52840/IMU_nrf/modules/nrfx/mdk/nrf52_erratas.h \
+ /home/cysko7927/IoMTEcoSystem/IMU/IMU_nRF52840/IMU_nrf/modules/nrfx/mdk/nrf53_erratas.h \
+ /home/cysko7927/IoMTEcoSystem/IMU/IMU_nRF52840/IMU_nrf/modules/nrfx/mdk/nrf91_erratas.h \
+ /home/cysko7927/IoMTEcoSystem/IMU/IMU_nRF52840/IMU_nrf/modules/nrfx/mdk/system_nrf52.h \
+ /home/cysko7927/IoMTEcoSystem/IMU/IMU_nRF52840/IMU_nrf/modules/nrfx/mdk/system_nrf52_approtect.h

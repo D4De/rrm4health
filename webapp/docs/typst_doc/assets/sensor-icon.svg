@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     x="0px" y="0px"
+     viewBox="0 0 1200 1200"
+     style="enable-background:new 0 0 1200 1200;"
+     xml:space="preserve">
+
+  <!-- NESSUN rettangolo di sfondo: solo elementi grafici -->
+
+    <g id="Graphic_Elements">
+    <g>
+      <path style="fill:none;stroke:#04D5FA;stroke-width:98.0057;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;"
+            d="M748.777,723.508L629.666,868.842c-15.348,18.727-43.993,18.726-59.339-0.002l-79.395-96.89"/>
+        <path style="fill:none;stroke:#04D5FA;stroke-width:98.0057;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;"
+              d="M906.947,414.167c17.989,56.319,4.651,120.477-40.014,165.173"/>
+        <path style="fill:none;stroke:#CE1465;stroke-width:98.0057;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;"
+              d="M701.646,308.595c16.203-5.198,33.056-7.8,49.917-7.8c41.764,0,83.486,15.964,115.37,47.805
+               c19.017,19.03,32.355,41.588,40.014,65.567"/>
+        <path style="fill:none;stroke:#EBB211;stroke-width:98.0057;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;"
+              d="M490.932,771.95L333.1,579.339c-63.725-63.725-63.725-167.014,0-230.739c31.841-31.841,73.606-47.805,115.37-47.805
+               c41.721,0,83.486,15.964,115.327,47.805l36.199,36.199l36.199-36.199c19.012-18.986,41.522-32.327,65.452-40.005"/>
+        <g>
+        <line style="fill:none;stroke:#222221;stroke-width:84.0049;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;"
+              x1="305.287" y1="783.067" x2="537.563" y2="783.067"/>
+            <line style="fill:none;stroke:#222221;stroke-width:84.0049;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;"
+                  x1="421.425" y1="666.929" x2="421.425" y2="899.205"/>
+      </g>
+    </g>
+  </g>
+</svg>

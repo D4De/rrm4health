@@ -1,0 +1,99 @@
+{
+  "rp1": {
+    "type": "raspberry_pi_4b_4gb",
+    "software": {
+      "os": "Linux",
+      "container_runtime": [],
+      "supported_acceleration": [],
+      "supported_protocols": ["MQTT", "HTTP", "RTSP"],
+      "supported_task_types": [
+        "data_acquisition",
+        "preprocessing",
+        "analytics",
+        "ml_inference",
+        "event_detection",
+        "actuation_control"
+      ],
+      "python": "3.10"
+    },
+    "location": {
+      "building": "B10",
+      "floor": "0",
+      "room": "LAB-0.01",
+      "zone": "gateway"
+    },
+    "resources": {
+      "hci1": {
+        "name": "LOGILINK BT0067",
+        "type": "External_Bluetooth_Antenna_Generic",
+        "role": "infrastructure",
+        "interface": "hci1",
+        "version": "5.3",
+        "ble": true,
+        "external": true,
+        "ble_max_stable_connections": 7,
+        "ble_aggregate_throughput_kbps": 700
+      }
+    },
+    "online": true
+  },
+  "lenovo_cysko": {
+    "type": "lenovo_v15_g2_alc",
+    "software": {
+      "os": "Linux",
+      "container_runtime": [],
+      "supported_acceleration": [],
+      "supported_protocols": ["MQTT", "HTTP", "RTSP"],
+      "supported_task_types": [
+        "data_acquisition",
+        "preprocessing",
+        "analytics",
+        "ml_inference",
+        "event_detection",
+        "actuation_control"
+      ],
+      "python": "3.10"
+    },
+    "location": {
+      "building": "B10",
+      "floor": "2",
+      "room": "LAB-2.14",
+      "zone": "office"
+    },
+    "resources": {
+      "cam1": {
+        "name": "Netcam_01",
+        "type": "Netcam",
+        "role": "sensor",
+        "interface": "USB0"
+      }
+    },
+    "online": true
+  },
+  "rp4_mobile_example": {
+    "type": "raspberry_pi_4b_4gb",
+    "software": {
+      "os": "Linux",
+      "container_runtime": [],
+      "supported_acceleration": [],
+      "supported_protocols": ["MQTT", "HTTP", "RTSP"],
+      "supported_task_types": [
+        "data_acquisition",
+        "preprocessing",
+        "analytics",
+        "ml_inference",
+        "event_detection",
+        "actuation_control"
+      ],
+      "python": "3.10"
+    },
+    "location": {
+      "building": null,
+      "floor": null,
+      "room": null,
+      "zone": null
+    },
+    "resources": {},
+    "online": false
+  }
+}

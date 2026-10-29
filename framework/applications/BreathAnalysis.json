@@ -1,0 +1,291 @@
+{
+  "name": "BreathAnalysis",
+  "taskgraph": [
+    {
+      "id": "setup_and_collect",
+      "description": "Setup and connect all the imus",
+      "depends_on": [],
+      "input": [],
+      "output": [
+        "new_windows_of_data"
+      ],
+      "required_resources": {
+        "bluetooth": 1
+      },
+        "requires": [
+            {
+              "type": "ResourceRequest",
+              "count": 3,
+              "exclusive": true,
+              "parameter_linked": "imunames",
+              "separator": "-",
+              "features": {
+                "gyro": {},
+                "acc": {},
+                "magn": {},
+                "ble": {}
+              }
+
+          }
+            
+        ]
+    },
+    {
+      "id": "TASK_READING_AND_PREPARE",
+      "description": "READING DATA FROM A CHANNEL OF COMMUNICATION AND PREPARE ALL THE DATA",
+      "depends_on": [
+        "setup_and_collect"
+      ],
+      "input": [
+        "new_windows_of_data"
+      ],
+      "output": [
+        "quaternions_arrays_splitted_for_ID",
+        "mean_quaternions_splitted_for_ID",
+        "quaternions_arrays_references",
+        "mean_quaternions_references",
+        "index_window",
+        "first_timestamp"
+      ]
+    },
+    {
+      "id": "PreProcessing",
+      "description": "PreProcessing",
+      "parameters": {},
+      "depends_on": [
+        "TASK_READING_AND_PREPARE"
+      ],
+      "input": [
+        "quaternions_arrays_splitted_for_ID",
+        "mean_quaternions_splitted_for_ID",
+        "quaternions_arrays_references",
+        "mean_quaternions_references",
+        "index_window",
+        "first_timestamp"
+      ],
+      "output": [
+        "data_prepocessed_splitted_for_ID",
+        "index_window",
+        "first_timestamp"
+      ]
+    },
+    {
+      "id": "DimensionReduction",
+      "description": "Dimension Reduction",
+      "depends_on": [
+        "PreProcessing"
+      ],
+      "input": [
+        "data_prepocessed_splitted_for_ID",
+        "index_window",
+        "first_timestamp"
+      ],
+      "output": [
+        "signals_reduced_splitted_for_ID",
+        "index_window",
+        "first_timestamp"
+      ]
+    },
+    {
+      "id": "SpectrumAnalysis",
+      "description": "Spectrum Analysis",
+      "depends_on": [
+        "DimensionReduction"
+      ],
+      "input": [
+        "signals_reduced_splitted_for_ID",
+        "index_window",
+        "first_timestamp"
+      ],
+      "output": [
+        "f_splitted_for_ID",
+        "pxx_splitted_for_ID",
+        "Signals_Fuse_splitted_for_ID",
+        "index_window",
+        "lowThresholds_splitted_for_ID",
+        "first_timestamp"
+      ]
+    },
+    {
+      "id": "Processing",
+      "description": "Processing",
+      "depends_on": [
+        "SpectrumAnalysis"
+      ],
+      "input": [
+        "lowThresholds_splitted_for_ID",
+        "Signals_Fuse_splitted_for_ID",
+        "f_splitted_for_ID",
+        "pxx_splitted_for_ID",
+        "index_window",
+        "first_timestamp"
+      ],
+      "output": [
+        "Max_Ind_Tot",
+        "Min_Ind_Tot",
+        "index_window",
+        "first_timestamp"
+      ]
+    },
+    {
+      "id": "SaveCSV",
+      "description": "EXPORT ELABORATED DATA TO CSV FILE",
+      "depends_on": [
+        "Processing"
+      ],
+      "input": [
+        "Max_Ind_Tot",
+        "Min_Ind_Tot",
+        "index_window",
+        "first_timestamp"
+      ],
+      "output": []
+    }
+  ],
+  "executable": {
+    "path": "applications/BreathAnalysis/BreathAnalysis.py",
+    "parameters": {
+      "imunames": "{{IMUXEXA-IMU747A-...}}",
+      "peripheral_locations": "{{torace-addome-riferimento}}",
+      "adapter": "{{hci0 or hci1}}",
+      "campaignname": "{{CAMP_NAME}}",
+      "samplingfreq": "10",
+      "method_output": "{{FILE or DB}}",
+      "path_FILE":  "output/",
+      "host_DB": "localhost",
+      "port_DB": "1883"
+    },
+    "timeouts": {
+      "setup": 60,
+      "loop": 5,
+      "cleanup": 10
+    }
+  },
+  "configurations": [
+    {
+      "id": "config0",
+      "partitions": [
+        {
+          "id": "partitionA",
+          "tasks": [
+            "setup_and_collect",
+            "TASK_READING_AND_PREPARE",
+            "PreProcessing",
+            "DimensionReduction",
+            "SpectrumAnalysis",
+            "Processing",
+            "SaveCSV"
+          ],
+          "node": "{{NODE_A}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        }
+      ],
+      "channels": []
+    },
+    {
+      "id": "config1",
+      "partitions": [
+        {
+          "id": "partitionZ",
+          "tasks": [
+            "setup_and_collect",
+            "TASK_READING_AND_PREPARE",
+            "PreProcessing",
+            "DimensionReduction",
+            "SpectrumAnalysis",
+            "Processing"
+          ],
+          "node": "{{NODE_A}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        },
+        {
+          "id": "partitionY",
+          "tasks": [
+            "SaveCSV"
+          ],
+          "node": "{{NODE_B}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        }
+      ],
+      "channels": [
+        {
+          "from_partition": "partitionZ",
+          "to_partition": "partitionY"
+        }
+      ]
+    },
+    {
+      "id": "config2",
+      "partitions": [
+        {
+          "id": "partitionA",
+          "tasks": [
+            "setup_and_collect",
+            "TASK_READING_AND_PREPARE"
+          ],
+          "node": "{{NODE_A}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        },
+        {
+          "id": "partitionB1",
+          "tasks": [
+            "PreProcessing",
+            "DimensionReduction",
+            "SpectrumAnalysis",
+            "Processing"
+          ],
+          "node": "{{NODE_B}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        },
+        {
+          "id": "partitionB2",
+          "tasks": [
+            "SaveCSV"
+          ],
+          "node": "{{NODE_C}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        }
+      ],
+      "channels": [
+        {
+          "from_partition": "partitionA",
+          "to_partition": "partitionB1"
+        },
+        {
+          "from_partition": "partitionB1",
+          "to_partition": "partitionB2"
+        }
+      ]
+    }
+  ]
+}

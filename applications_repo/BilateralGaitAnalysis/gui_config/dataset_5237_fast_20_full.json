@@ -1,0 +1,23 @@
+{
+  "name": "Dataset 5237 - Fast 20 m - Full",
+  "description": "Fast 20-metre trial for participant 5237, replayed at the dataset's native 204.8 Hz rate, with complete temporal and spatial processing.",
+  "userargs": {
+    "imu_names": "dataset_left-dataset_right",
+    "sensor_positions": "left_foot-right_foot",
+    "adapter": "hci0",
+    "acquisition_mode": "file",
+    "input_path": "dataset/SensorPositionComparison2019-v1.0.0-beta",
+    "subject_id": "5237",
+    "trial_id": "fast_20",
+    "campaign_name": "dataset_5237_fast_20",
+    "initial_counter": "0",
+    "sampling_frequency_hz": "204.8",
+    "window_duration_s": "20",
+    "window_overlap_s": "2",
+    "lowpass_cutoff_hz": "20",
+    "lightweight_mode": "false",
+    "barth_max_cost": "4.0",
+    "minimum_complete_strides": "3",
+    "output_path": "output/5237_fast_20_full/"
+  }
+}

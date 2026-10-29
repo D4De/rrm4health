@@ -1,0 +1,112 @@
+Agisci come software architect e developer senior di un framework che permette d'integrare app scritte in python definite da un descrittore JSON per poterle eseguire in maniera distribuita.
+
+Devi integrare lo script monolitico allegato nel framework applicativo, usando esclusivamente:
+
+1. il descriptor JSON allegato;
+2. lo scheletro vuoto dell'applicazione (con tutta la suddivisione in task che rispecchia il descriptor) integrata;
+3. lo script monolitico originale;
+4. Un esempio di app integrata chiamata ExampleAllMngr.py come riferimento per i manager BLE, Wi-Fi e MQTT.
+5. I vari manager BLE,WIFI e MQTT usati da ExampleAllMngr.py
+
+Obiettivo:
+trasformare lo script monolitico in un’applicazione compatibile con il framework, mantenendo invariato il comportamento funzionale.
+
+Regole obbligatorie:
+
+- Il descriptor JSON è la fonte di verità per:
+  - task;
+  - dipendenze;
+  - input;
+  - output;
+  - parametri;
+  - risorse richieste.
+- Non modificare gli ID dei task e non inventare task non presenti nel descriptor.
+- Usa lo scheletro generato come struttura di base.
+- Non modificare `set_framework()` né la logica interna richiesta dal framework.
+- Mantieni separati:
+  - setup globale;
+  - setup dei task;
+  - loop dei task;
+  - cleanup dei task;
+  - cleanup globale.
+- Sposta la logica dello script monolitico nei task corretti senza duplicarla.
+- Rispetta rigorosamente le dipendenze del descriptor.
+- Ogni metodo `*_loop()` deve restituire sempre un dizionario con la stessa struttura.
+- I nomi restituiti dai loop devono corrispondere esattamente agli output dichiarati nel descriptor.
+- Gli argomenti dei metodi loop devono corrispondere esattamente agli input dichiarati nel descriptor.
+- Le variabili persistenti devono essere inizializzate nei metodi `*_setup()`.
+- Rilascia sempre risorse, thread, connessioni, manager MQTT e periferiche nei metodi `*_cleanup()`.
+- Gestisci correttamente `KeyboardInterrupt`, errori di acquisizione e timeout.
+- Non usare direttamente BLE, Wi-Fi o MQTT se esiste già un manager nel progetto.
+- Usa i manager e le relative API mostrate in `ExampleAllMngr.py`.
+- Non inventare firme per i manager.
+- Non inserire valori hardcoded se il descriptor definisce il parametro.
+- Non rendere alcuni parametri fissi e statici dell'applicazione come parametri d'input. Al massimo dare consigli su possibili input aggiuntivi.
+- Leggi i parametri da `self._user_args`.
+- Valida i parametri obbligatori nel setup.
+- Se un parametro è una lista separata da un delimitatore, usa il delimitatore indicato nel descriptor.
+- Mantieni compatibilità con il formato dei pacchetti e con i nomi dei campi già usati dai manager.
+- i task terminali, ossia quelli che non hanno task successori, non devono produrre output destinati al framework. Devono invece preservare le modalità di gestione dei risultati previste dall'applicazione monolitica originale, come la stampa su console, il salvataggio su file o la pubblicazione tramite servizi esterni. I relativi metodi `*_loop()` devono restituire un dizionario vuoto (`{}`). Il descriptor JSON deve essere coerente con questa regola, dichiarando `"output": []` per tali task. Non devono essere introdotti nuovi meccanismi di persistenza o comunicazione se non esplicitamente richiesti.
+
+### Richieste specifiche
+- L'applicazione si connette alle IMU usando solo il BLE.
+- L'applicazione userà le IMU solo in modalità RAW.
+- L'applicazione userà due flussi MQTT distinti uno per i dati grezzi e uno per i risultati elaborati tramite CSV. 
+
+### Esempi di richieste generiche:
+- Gestisci esplicitamente la differenza tra:
+  - modalità RAW;
+  - modalità FEATURES.
+- Per RAW costruisci le finestre nell’applicazione.
+- Per FEATURES considera che il pacchetto ricevuto rappresenta già una finestra elaborata dalla IMU.
+- Per frequenze elevate preferisci Wi-Fi; per frequenze basse puoi usare BLE.
+- Se usi due flussi MQTT distinti, crea due istanze separate di `MQTT_Manager`:
+  - una per i dati acquisiti;
+  - una per i risultati elaborati.
+- Quando devi pubblicare risultati:
+  - produci prima un output strutturato;
+  - converti l’output in una stringa CSV;
+  - pubblicalo tramite il secondo manager MQTT.
+
+Procedura richiesta:
+
+1. Analizza il descriptor.
+2. Analizza lo scheletro generato.
+3. Analizza lo script monolitico.
+4. Analizza `ExampleAllMngr.py`.
+5. Crea una tabella di corrispondenza:
+   - funzione originale;
+   - task di destinazione;
+   - metodo framework;
+   - input;
+   - output;
+   - stato persistente.
+6. Evidenzia eventuali incompatibilità prima di modificare i file.
+7. Integra il codice nello scheletro.
+8. Aggiorna gli import dei manager.
+9. Implementa setup, loop e cleanup.
+10. Dai consigli su modifiche utili o necessari per il descrittore. Tali consigli di modifiche devono mantenere coerenza con il codice.
+11. Esegui i controlli statici.
+
+Output atteso:
+
+- file applicativo integrato;
+- eventuali adapter locali per manager esterni;
+- descriptor aggiornato, se necessario;
+- riepilogo delle modifiche;
+- elenco dei parametri richiesti;
+- elenco delle assunzioni fatte;
+- elenco dei problemi non risolti;
+
+
+Prima di concludere verifica questa checklist:
+
+[ ] Ogni task del descriptor ha i metodi richiesti.
+[ ] Ogni input di un task è prodotto da un task precedente.
+[ ] Ogni output dichiarato è realmente restituito.
+[ ] Nessun output viene prodotto da due task incompatibili.
+[ ] I manager usati hanno API corrette.
+[ ] Le connessioni vengono chiuse nel cleanup.
+[ ] MQTT acquisizione e MQTT output sono distinti quando necessario.
+[ ] Non sono rimasti parametri legacy non utilizzati.
+[ ] Il codice è compilabile e importabile.

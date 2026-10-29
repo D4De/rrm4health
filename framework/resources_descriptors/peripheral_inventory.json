@@ -1,0 +1,132 @@
+{
+  "IMUX7X7": {
+    "id_ble": "IMUX7X7",
+    "EXCL_BY_CONFIGURATION": false,
+    "type": "Arduino_Nano_33_BLE",
+    "location": {
+      "building": "B10",
+      "floor": "2",
+      "room": "LAB-2.14",
+      "zone": "sensors"
+    }
+  },
+  "IMU373B": {
+    "id_ble": "IMU373B",
+    "EXCL_BY_CONFIGURATION": false,
+    "type": "Arduino_Nano_33_BLE",
+    "location": {
+      "building": "B10",
+      "floor": "2",
+      "room": "LAB-2.14",
+      "zone": "sensors"
+    }
+  },
+  "IMU5B35": {
+    "id_ble": "IMU5B35",
+    "EXCL_BY_CONFIGURATION": false,
+    "type": "Arduino_Nano_33_BLE_SENSE",
+    "location": {
+      "building": "B10",
+      "floor": "2",
+      "room": "LAB-2.14",
+      "zone": "sensors"
+    }
+  },
+  "IMU5E0C": {
+    "id_ble": "IMU5E0C",
+    "EXCL_BY_CONFIGURATION": false,
+    "type": "Arduino_Nano_33_BLE_REV2",
+    "location": {
+      "building": "B10",
+      "floor": "2",
+      "room": "LAB-2.14",
+      "zone": "sensors"
+    }
+  },
+  "IMU3C95": {
+    "id_ble": "IMU3C95",
+    "EXCL_BY_CONFIGURATION": false,
+    "type": "Arduino_Nano_33_BLE_REV2",
+    "location": {
+      "building": "B10",
+      "floor": "2",
+      "room": "LAB-2.14",
+      "zone": "sensors"
+    }
+  },
+  "IMUFB9D": {
+    "id_ble": "IMUFB9D",
+    "EXCL_BY_CONFIGURATION": false,
+    "type": "nRF52840",
+    "location": {
+      "building": "B10",
+      "floor": "2",
+      "room": "LAB-2.14",
+      "zone": "sensors"
+    }
+  },
+  "IMUEDF1": {
+    "id_ble": "IMUEDF1",
+    "EXCL_BY_CONFIGURATION": false,
+    "type": "nRF52840",
+    "location": {
+      "building": "B10",
+      "floor": "2",
+      "room": "LAB-2.14",
+      "zone": "sensors"
+    }
+  },
+  "IMU1747": {
+    "id_ble": "IMU1747",
+    "EXCL_BY_CONFIGURATION": false,
+    "type": "nRF52840",
+    "location": {
+      "building": "B10",
+      "floor": "2",
+      "room": "LAB-2.14",
+      "zone": "sensors"
+    }
+  },
+  "b0:b2:1c:4a:00:38": {
+    "EXCL_BY_CONFIGURATION": false,
+    "ssid": "WIFI_126",
+    "pass": "126_WIFI",
+    "mac": "b0:b2:1c:4a:00:38",
+    "port": "8023",
+    "type": "Arduino_Nano_33_IoT",
+    "location": {
+      "building": "B10",
+      "floor": "2",
+      "room": "LAB-2.14",
+      "zone": "sensors"
+    }
+  },
+  "E0:72:A1:21:39:60": {
+    "EXCL_BY_CONFIGURATION": false,
+    "ssid": "WIFI_126",
+    "pass": "126_WIFI",
+    "mac": "E0:72:A1:21:39:60",
+    "port": "8023",
+    "type": "ESP32C3_mini",
+    "location": {
+      "building": "B10",
+      "floor": "2",
+      "room": "LAB-2.14",
+      "zone": "sensors"
+    }
+  },
+  "E0:72:A1:21:6A:20": {
+    "EXCL_BY_CONFIGURATION": false,
+    "ssid": "WIFI_126",
+    "pass": "126_WIFI",
+    "mac": "E0:72:A1:21:6A:20",
+    "port": "8023",
+    "type": "ESP32C3_mini",
+    "location": {
+      "building": "B10",
+      "floor": "2",
+      "room": "LAB-2.14",
+      "zone": "sensors"
+    }
+  }
+}

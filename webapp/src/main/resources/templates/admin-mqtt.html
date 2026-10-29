@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAMPAIGN | Manutenzione - MQTT</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-base-200">
+<!-- Manutenzione MQTT: configurazione runtime persistente su file .properties. -->
+
+<div class="navbar bg-base-100 shadow-md px-4">
+    <div class="flex-1">
+        <div class="flex items-center gap-3">
+            <div class="avatar">
+                <div class="w-10 rounded-full bg-base-200 flex items-center justify-center overflow-hidden">
+                    <img src="/images/sensor-icon.svg" alt="BSN" class="w-6 h-6"/>
+                </div>
+            </div>
+            <div>
+                <a href="/" class="text-lg font-bold hover:text-primary">CAMPAIGN</a>
+            </div>
+        </div>
+    </div>
+    <div class="flex-none">
+        <div class="dropdown dropdown-end">
+            <label tabindex="0" class="btn btn-ghost normal-case">
+                <div class="flex flex-col items-end leading-tight">
+                    <div class="font-semibold" th:text="${#authentication.name}">username</div>
+                </div>
+            </label>
+
+            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-56">
+                <li class="pointer-events-none opacity-70">
+                    <a class="flex justify-between">
+                        <span class="font-semibold">Utente</span>
+                        <span th:text="${#authentication.name}">username</span>
+                    </a>
+                </li>
+                <li class="mt-2">
+                    <form th:action="@{/logout}" method="post" class="w-full">
+                        <button type="submit" class="btn btn-error btn-sm w-full">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<main class="max-w-5xl mx-auto p-4 lg:p-6">
+    <div class="tabs tabs-boxed mb-6">
+        <a href="/admin/scripts" class="tab" th:classappend="${activeTab == 'scripts'} ? ' tab-active' : ''">Script</a>
+        <a href="/admin/sensori" class="tab" th:classappend="${activeTab == 'sensori'} ? ' tab-active' : ''">Sensori</a>
+        <a href="/admin/database" class="tab" th:classappend="${activeTab == 'database'} ? ' tab-active' : ''">Database</a>
+        <a href="/admin/mqtt" class="tab" th:classappend="${activeTab == 'mqtt'} ? ' tab-active' : ''">MQTT</a>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-2xl">Manutenzione - MQTT</h2>
+            <p class="text-sm text-gray-500">
+                Modifica la configurazione del broker MQTT usato per ricevere i dati real time.
+            </p>
+            <p class="text-sm text-gray-500">
+                File configurazione: <span class="font-mono" th:text="${mqttConfigPath}">./data/mqtt-runtime.properties</span>
+            </p>
+
+            <div th:if="${mqttSuccess}" class="alert alert-success mt-4">
+                <span th:text="${mqttSuccess}">Configurazione MQTT salvata.</span>
+            </div>
+            <div th:if="${mqttError}" class="alert alert-error mt-4">
+                <span th:text="${mqttError}">Errore durante il salvataggio.</span>
+            </div>
+            <div th:if="${mqttLocked}" class="alert alert-warning mt-4">
+                <span>
+                    Configurazione bloccata: ci sono
+                    <span class="font-semibold" th:text="${activeCampaignsCount}">1</span>
+                    campagne in avvio o in corso.
+                </span>
+            </div>
+
+            <div class="divider my-4"></div>
+
+            <form action="/admin/mqtt" method="post" class="space-y-5">
+                <div class="form-control">
+                    <label class="label cursor-pointer justify-start gap-3">
+                        <input type="checkbox" name="enabled" value="true" class="toggle toggle-primary"
+                               th:checked="${mqttConfig.enabled()}" th:disabled="${mqttLocked}" />
+                        <span class="label-text font-semibold">Abilita connessione MQTT</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_10rem_minmax(0,1fr)] gap-4">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Host/IP MQTT *</span>
+                        </label>
+                        <input type="text" name="brokerHost" class="input input-bordered font-mono"
+                               th:value="${mqttBrokerHost}"
+                               placeholder="192.168.1.50" th:disabled="${mqttLocked}" required />
+                        <label class="label">
+                            <span class="label-text-alt text-gray-500">
+                                Esempi: localhost, 192.168.1.50 oppure broker.example.com
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Porta *</span>
+                        </label>
+                        <input type="number" name="brokerPort" min="1" max="65535"
+                               class="input input-bordered font-mono"
+                               th:value="${mqttBrokerPort}"
+                               placeholder="1883" th:disabled="${mqttLocked}" required />
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Filtro topic MQTT *</span>
+                        </label>
+                        <input type="text" name="topic" class="input input-bordered font-mono"
+                               th:value="${mqttConfig.topic()}"
+                               placeholder="aaac/campaign/#" th:disabled="${mqttLocked}" required />
+                        <label class="label">
+                            <span class="label-text-alt text-gray-500">
+                                Esempi: aaac/campaign/# per tutti gli output oppure aaac/campaign/imu per la sola IMU
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <details class="collapse collapse-arrow bg-base-200">
+                    <summary class="collapse-title font-semibold">Impostazioni avanzate</summary>
+                    <div class="collapse-content">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-2">
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-semibold">Client ID</span>
+                                </label>
+                                <input type="text" name="clientId" class="input input-bordered font-mono"
+                                       th:value="${mqttConfig.clientId()}"
+                                       placeholder="bsn-webapp-sse-01" th:disabled="${mqttLocked}" required />
+                                <label class="label">
+                                    <span class="label-text-alt text-gray-500">
+                                        Deve essere unico sul broker. Di solito non va modificato.
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-semibold">QoS</span>
+                                </label>
+                                <select name="qos" class="select select-bordered" th:disabled="${mqttLocked}">
+                                    <option value="0" th:selected="${mqttConfig.qos() == 0}">0 - default</option>
+                                    <option value="1" th:selected="${mqttConfig.qos() == 1}">1</option>
+                                    <option value="2" th:selected="${mqttConfig.qos() == 2}">2</option>
+                                </select>
+                                <label class="label">
+                                    <span class="label-text-alt text-gray-500">
+                                        Lascia 0 salvo esigenze specifiche del broker.
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-semibold">Username</span>
+                                </label>
+                                <input type="text" name="username" class="input input-bordered font-mono"
+                                       th:value="${mqttConfig.username()}"
+                                       placeholder="lascia vuoto se il broker non richiede autenticazione" th:disabled="${mqttLocked}" />
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-semibold">Password</span>
+                                </label>
+                                <input type="password" name="password" class="input input-bordered font-mono"
+                                       th:value="${mqttConfig.password()}"
+                                       placeholder="lascia vuoto se il broker non richiede autenticazione" th:disabled="${mqttLocked}" />
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <div>
+                    <button type="submit" class="btn btn-primary w-full" th:disabled="${mqttLocked}">
+                        Salva configurazione MQTT
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,146 @@
+{
+  "name": "PatientPostureMonitoring",
+  "taskgraph": [
+    {
+      "id": "acquire_depth_frame",
+      "description": "Read the next 16-bit depth frame and its reference label from the SDT dataset",
+      "depends_on": [],
+      "input": [],
+      "output": [
+        "raw_depth_frame",
+        "frame_index",
+        "dataset_cycle",
+        "reference_label"
+      ]
+    },
+    {
+      "id": "preprocess_depth_frame",
+      "description": "Normalize valid depth values, resize to 64x64 and replicate the image to three channels",
+      "depends_on": [
+        "acquire_depth_frame"
+      ],
+      "input": [
+        "raw_depth_frame",
+        "frame_index",
+        "dataset_cycle",
+        "reference_label"
+      ],
+      "output": [
+        "model_input",
+        "frame_index",
+        "dataset_cycle",
+        "reference_label"
+      ]
+    },
+    {
+      "id": "classify_posture",
+      "description": "Run the selected light or heavy TFLite MobileNetV2 model and classify patient posture",
+      "depends_on": [
+        "preprocess_depth_frame"
+      ],
+      "input": [
+        "model_input",
+        "frame_index",
+        "dataset_cycle",
+        "reference_label"
+      ],
+      "output": [
+        "posture_result"
+      ]
+    },
+    {
+      "id": "publish_posture_result",
+      "description": "Publish the posture state and persist optional inference and timing metrics",
+      "depends_on": [
+        "classify_posture"
+      ],
+      "input": [
+        "posture_result"
+      ],
+      "output": []
+    }
+  ],
+  "executable": {
+    "path": "applications/PatientPostureMonitoring/PatientPostureMonitoring.py",
+    "parameters": {
+      "dataset_path": "{{Path to the extracted SDT dataset}}",
+      "heavy_mode": "false",
+      "num_threads": "4",
+      "target_fps": "5",
+      "loop_dataset": "true",
+      "output_path": "output/"
+    },
+    "timeouts": {
+      "setup": 60,
+      "loop": 30,
+      "cleanup": 30
+    }
+  },
+  "configurations": [
+    {
+      "id": "config0",
+      "partitions": [
+        {
+          "id": "partition0",
+          "tasks": [
+            "acquire_depth_frame",
+            "preprocess_depth_frame",
+            "classify_posture",
+            "publish_posture_result"
+          ],
+          "node": "{{NODE_A}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        }
+      ],
+      "channels": []
+    },
+    {
+      "id": "config1",
+      "partitions": [
+        {
+          "id": "partitionA",
+          "tasks": [
+            "acquire_depth_frame"
+          ],
+          "node": "{{NODE_A}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        },
+        {
+          "id": "partitionB",
+          "tasks": [
+            "preprocess_depth_frame",
+            "classify_posture",
+            "publish_posture_result"
+          ],
+          "node": "{{NODE_B}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        }
+      ],
+      "channels": [
+        {
+          "from_partition": "partitionA",
+          "to_partition": "partitionB"
+        },
+        {
+          "from_partition": "partitionB",
+          "to_partition": "partitionA"
+        }
+      ]
+    }
+  ]
+}

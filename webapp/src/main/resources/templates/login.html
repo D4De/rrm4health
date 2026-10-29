@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <title>CAMPAIGN | Login</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-base-200">
+
+<!-- Pagina di accesso: form di login con messaggi di errore/successo. -->
+
+<div class="card w-96 bg-base-100 shadow-xl">
+    <div class="card-body">
+
+        <div class="text-center mb-4">
+            <div class="avatar placeholder mb-2">
+                <div class="rounded-full w-16 flex items-center justify-center overflow-hidden">
+                    <img src="/images/sensor-icon.svg" alt="Sensore" class="w-10 h-10" />
+                </div>
+            </div>
+            <h2 class="card-title justify-center text-2xl font-bold">Benvenuto!</h2>
+            <p class="text-gray-500">Inserisci le tue credenziali</p>
+        </div>
+
+        <div th:if="${param.registered}" class="alert alert-success text-sm py-2 mb-4">
+            <span>Registrazione completata.</span>
+        </div>
+
+        <div th:if="${param.error}" class="alert alert-error text-sm py-2 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span>Username o password errati.</span>
+        </div>
+
+        <div th:if="${param.logout}" class="alert alert-success text-sm py-2 mb-4">
+            <span>Logout effettuato con successo.</span>
+        </div>
+
+        <form th:action="@{/login}" method="post">
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">Username</span>
+                </label>
+                <input type="text"
+                       name="username"
+                       placeholder="mario.rossi"
+                       class="input input-bordered w-full"
+                       required autofocus />
+            </div>
+
+            <div class="form-control mt-4">
+                <label class="label">
+                    <span class="label-text font-semibold">Password</span>
+                </label>
+                <input type="password"
+                       name="password"
+                       placeholder="********"
+                       class="input input-bordered w-full"
+                       required />
+            </div>
+
+            <div class="form-control mt-6">
+                <button type="submit" class="btn btn-primary w-full">ACCEDI</button>
+            </div>
+        </form>
+
+        <div class="text-center mt-4">
+            <span class="text-sm">Non hai un account? </span>
+            <a th:href="@{/register}" class="link link-primary text-sm font-bold">Registrati</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

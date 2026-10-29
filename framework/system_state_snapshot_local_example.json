@@ -1,0 +1,99 @@
+{
+  "snapshot_timestamp_utc": "2026-05-10T12:00:00Z",
+  "scope": "local",
+  "local_node": {
+    "logical_node_id": "rp1",
+    "node_type_id": "raspberry_pi_4b_4gb",
+    "endpoint": {
+      "ip": "192.168.1.78",
+      "port": 37523,
+      "type": "wifi"
+    },
+    "node_status": "READY",
+    "online": true,
+    "location": {
+      "building": "B10",
+      "floor": "0",
+      "room": "LAB-0.01",
+      "zone": "gateway"
+    }
+  },
+  "status": {
+    "cpu_percentage": 19.344444444444445,
+    "cpu_frequency": 2.333564814814815,
+    "battery_percentage": 100.0,
+    "is_connected_to_power": true,
+    "temperature": 36.85000000000001,
+    "memory_used_mb": 3224,
+    "memory_available_mb": 872,
+    "memory_percentage": 78.72222222222223,
+    "disk_used_gb": 16.6,
+    "disk_available_gb": 111.4,
+    "power_consumption_w": 4.3,
+    "upload_speed": 2008.2802559729753,
+    "download_speed": 1430.7899210790094,
+    "last_update_utc": "2026-05-10T11:59:58Z"
+  },
+  "connected_resources": [
+      {
+        "resource_id": "hci1",
+        "type": "External_Bluetooth_Antenna_Generic",
+        "status": "ACTIVE",
+        "connection_type": "usb"
+      },
+      {
+        "resource_id": "IMUX",
+        "type": "Arduino_33_BLE",
+        "status": "ACTIVE",
+        "connection_type": "ble"
+      },
+      {
+        "resource_id": "IMUY",
+        "type": "Arduino_33_BLE",
+        "status": "ACTIVE",
+        "connection_type": "ble"
+      },
+      {
+        "resource_id": "IMUZ",
+        "type": "Arduino_33_BLE",
+        "status": "ACTIVE",
+        "connection_type": "ble"
+      }
+  ],
+  "running_partitions": [
+    {
+      "partition_id": ["task1", "applA", 0],
+      "pid": 18234,
+      "client_id": "client_rp1_task1_applA_0",
+      "status": "RUNNING",
+      "utilization": {
+        "cpu_percentage": 8.6,
+        "memory_mb": 320,
+        "temperature": 36.85,
+        "network_tx_kbps": 120.5,
+        "network_rx_kbps": 95.1
+      },
+      "devices_status": {
+        "hci1": "ACTIVE",
+        "IMUX": "ACTIVE"
+      }
+    },
+    {
+      "partition_id": ["task2", "applB", 0],
+      "pid": 18291,
+      "client_id": "client_rp1_task2_applB_0",
+      "status": "RUNNING",
+      "utilization": {
+        "cpu_percentage": 6.9,
+        "memory_mb": 280,
+        "temperature": 36.85,
+        "network_tx_kbps": 60.2,
+        "network_rx_kbps": 45.8
+      },
+      "devices_status": {
+        "IMUY": "ACTIVE",
+        "IMUZ": "ACTIVE"
+      }
+    }
+  ]
+}

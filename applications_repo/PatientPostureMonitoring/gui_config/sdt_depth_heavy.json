@@ -1,0 +1,12 @@
+{
+  "name": "SDT Depth - Heavy",
+  "description": "Continuous replay of the real SDT Depth test split at 5 FPS using the unquantized Float32 MobileNetV2 model.",
+  "userargs": {
+    "dataset_path": "/home/cysko7927/SDT_dataset",
+    "heavy_mode": "true",
+    "num_threads": "4",
+    "target_fps": "5",
+    "loop_dataset": "true",
+    "output_path": "output/heavy/"
+  }
+}

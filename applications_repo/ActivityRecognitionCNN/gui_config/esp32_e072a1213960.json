@@ -1,0 +1,13 @@
+{
+  "name": "ESP32 E0:72:A1:21:39:60 - Activity Recognition CNN",
+  "description": "Wi-Fi RAW a 50 Hz; classificazione CNN su finestre di 100 campioni. Sensore e rete ripresi dal preset FallDetection.",
+  "userargs": {
+    "imuname": "E0:72:A1:21:39:60",
+    "campaignname": "activity_recognition_cnn",
+    "samplingfreq": "50",
+    "wifi_interface": "wlp2s0",
+    "wifi_ssid": "G5_7411",
+    "wifi_password": "edna modem",
+    "imuaddress": "E0:72:A1:21:39:60"
+  }
+}

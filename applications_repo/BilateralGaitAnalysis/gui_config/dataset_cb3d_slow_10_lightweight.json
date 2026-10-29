@@ -1,0 +1,23 @@
+{
+  "name": "Dataset cb3d - Slow 10 m - Lightweight",
+  "description": "Slow 10-metre trial for participant cb3d, replayed at the dataset's native 204.8 Hz rate; skips trajectory reconstruction and spatial metrics.",
+  "userargs": {
+    "imu_names": "dataset_left-dataset_right",
+    "sensor_positions": "left_foot-right_foot",
+    "adapter": "hci0",
+    "acquisition_mode": "file",
+    "input_path": "dataset/SensorPositionComparison2019-v1.0.0-beta",
+    "subject_id": "cb3d",
+    "trial_id": "slow_10",
+    "campaign_name": "dataset_cb3d_slow_10",
+    "initial_counter": "0",
+    "sampling_frequency_hz": "204.8",
+    "window_duration_s": "20",
+    "window_overlap_s": "2",
+    "lowpass_cutoff_hz": "20",
+    "lightweight_mode": "true",
+    "barth_max_cost": "4.0",
+    "minimum_complete_strides": "3",
+    "output_path": "output/cb3d_slow_10_lightweight/"
+  }
+}

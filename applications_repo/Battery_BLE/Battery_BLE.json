@@ -1,0 +1,51 @@
+{
+  "name": "Battery_BLE",
+  "taskgraph": [
+    {
+      "id": "setup_and_collect",
+      "description": "Setup and connect all the imus",
+      "depends_on": [],
+      "input": [],
+      "output": [
+      ],
+      "required_resources": {
+        "bluetooth": 1
+      },
+        "requires": [
+        ]
+    }
+  ],
+  "executable": {
+    "path": "applications/Battery_BLE/Battery_BLE.py",
+    "parameters": {
+      "imunames": "{{IMUXXX-...}}",
+      "adapter": "hci0"
+    },
+    "timeouts": {
+      "setup": 60,
+      "loop": 5,
+      "cleanup": 10
+    }
+  },
+  "configurations": [
+    {
+      "id": "config0",
+      "partitions": [
+        {
+          "id": "partitionA",
+          "tasks": [
+            "setup_and_collect"
+          ],
+          "node": "{{NODE_A}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        }
+      ],
+      "channels": []
+    }
+  ]
+}

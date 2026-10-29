@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrazione - BSN WebApp</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="flex items-center justify-center min-h-screen bg-base-200">
+<!-- Pagina registrazione: form utente con validazioni e messaggi errore. -->
+
+<div class="card w-96 bg-base-100 shadow-xl">
+    <div class="card-body">
+
+        <div class="text-center mb-4">
+            <div class="avatar placeholder mb-2">
+                <div class="bg-primary text-neutral-content rounded-full w-16">
+                    <span class="text-3xl">📝</span>
+                </div>
+            </div>
+            <h2 class="card-title justify-center text-2xl font-bold">Crea un account</h2>
+            <p class="text-gray-500">Inserisci username, password e ruolo</p>
+        </div>
+
+        <!-- errore custom (es. username già usato) -->
+        <div th:if="${errorMessage}" class="alert alert-error text-sm py-2 mb-4">
+            <span th:text="${errorMessage}">Errore</span>
+        </div>
+
+        <form th:action="@{/register}" th:object="${registerRequest}" method="post">
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">Username</span>
+                </label>
+                <input type="text"
+                       th:field="*{username}"
+                       placeholder="mario.rossi"
+                       class="input input-bordered w-full"
+                       required />
+                <p class="text-error text-xs mt-1"
+                   th:if="${#fields.hasErrors('username')}"
+                   th:errors="*{username}"></p>
+            </div>
+
+            <div class="form-control mt-4">
+                <label class="label">
+                    <span class="label-text font-semibold">Password</span>
+                </label>
+                <input type="password"
+                       th:field="*{password}"
+                       placeholder="********"
+                       class="input input-bordered w-full"
+                       required />
+                <p class="text-error text-xs mt-1"
+                   th:if="${#fields.hasErrors('password')}"
+                   th:errors="*{password}"></p>
+            </div>
+
+            <div class="form-control mt-4">
+                <label class="label">
+                    <span class="label-text font-semibold">Ruolo</span>
+                </label>
+
+                <select th:field="*{ruolo}" class="select select-bordered w-full" required>
+                    <option value="" disabled selected>Scegli un ruolo</option>
+                    <option value="USER_MED">Medico</option>
+                    <option value="USER_DEV">Developer</option>
+                </select>
+
+                <p class="text-error text-xs mt-1"
+                   th:if="${#fields.hasErrors('ruolo')}"
+                   th:errors="*{ruolo}"></p>
+            </div>
+
+            <div class="form-control mt-6">
+                <button type="submit" class="btn btn-primary w-full">REGISTRATI</button>
+            </div>
+        </form>
+
+        <div class="text-center mt-4">
+            <span class="text-sm">Hai già un account? </span>
+            <a th:href="@{/login}" class="link link-primary text-sm font-bold">Accedi</a>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

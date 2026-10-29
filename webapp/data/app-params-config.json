@@ -1,0 +1,33 @@
+{
+  "apps" : {
+    "Collector_BLE" : {
+      "values" : {
+        "adapter" : "hci0",
+        "rawquat" : "True",
+        "MQTT_SERVER" : "10.239.37.120",
+        "MQTT_PORT" : "1883",
+        "MQTT_MSG" : "aaac/campaign/imu"
+      },
+      "editableKeys" : [ "adapter" ]
+    },
+    "BreathAnalysis" : {
+      "values" : {
+        "adapter" : "hci0",
+        "method_output" : "DB",
+        "path_FILE" : "output/",
+        "host_DB" : "10.239.37.120",
+        "port_DB" : "1883"
+      },
+      "editableKeys" : [ "adapter" ]
+    },
+    "Battery_BLE" : {
+      "values" : {
+        "adapter" : "hci0",
+        "initcounter" : "0",
+        "rawquat" : "True"
+      },
+      "editableKeys" : [ "adapter" ]
+    }
+  },
+  "campaignOverrides" : { }
+}

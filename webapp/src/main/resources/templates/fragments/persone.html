@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Fragment selezione paziente: input ricerca + lista risultati + select finale. -->
+<div th:fragment="selectPazienti(persone)" id="pazienteSelectWrapper" class="flex flex-col gap-2">
+    <input id="searchPaziente" type="text" class="input input-bordered input-sm"
+           placeholder="Cerca paziente..." />
+    <div id="pazienteSearchResults" class="hidden rounded border border-base-300 bg-base-100 shadow-sm max-h-40 overflow-auto">
+    </div>
+    <div class="flex gap-2">
+        <select id="selectPaziente" name="idPersona" class="select select-bordered flex-1" required>
+            <option value="">Seleziona un paziente...</option>
+            <option th:each="p : ${persone}"
+                    th:value="${p.id}"
+                    th:text="${p.nomeCompleto != null ? p.nomeCompleto : p.nome + ' ' + p.cognome}">
+                Mario Rossi
+            </option>
+        </select>
+        <button type="button" onclick="openCreatePersonaModal()" class="btn btn-outline btn-square" aria-label="Aggiungi paziente">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+        </button>
+    </div>
+</div>
+
+</body>
+</html>

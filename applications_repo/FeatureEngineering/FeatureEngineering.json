@@ -1,0 +1,118 @@
+{
+  "name": "FeatureEngineering",
+  "taskgraph": [
+    {
+      "id": "setup_and_collect",
+      "description": "Collect RAW data from one IMU through Wi-Fi and build an overlapping window",
+      "depends_on": [],
+      "input": [],
+      "output": [
+        "new_window_of_data"
+      ],
+      "required_resources": {
+      },
+      "requires": [
+        {
+          "type": "ResourceRequest",
+          "count": 1,
+          "exclusive": true,
+          "parameter_linked": "imuname",
+          "separator": "",
+          "features": {
+            "gyro": {},
+            "acc": {},
+            "wifi": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "FeatureEngineering",
+      "description": "Extract the feature vector from the RAW IMU window and associate the activity label",
+      "depends_on": [
+        "setup_and_collect"
+      ],
+      "input": [
+        "new_window_of_data"
+      ],
+      "output": [
+      ]
+    }
+  ],
+  "executable": {
+    "path": "applications/FeatureEngineering/FeatureEngineering.py",
+    "parameters": {
+      "imuname": "{{IMU_NAME}}",
+      "campaignname": "{{CAMP_NAME}}",
+      "samplingfreq": "{{SAMPLING_FREQUENCY}}",
+      "activity": "{{ACTIVITY_NAME}}",
+      "wifi_interface": "{{WIFI_INTERFACE}}",
+      "wifi_ssid": "{{WIFI_SSID}}",
+      "wifi_password": "{{WIFI_PASSWORD}}"
+    },
+    "timeouts": {
+      "setup": 60,
+      "loop": 5,
+      "cleanup": 10
+    }
+  },
+  "configurations": [
+    {
+      "id": "config0",
+      "partitions": [
+        {
+          "id": "partitionA",
+          "tasks": [
+            "setup_and_collect",
+            "FeatureEngineering"
+          ],
+          "node": "{{NODE_A}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        }
+      ],
+      "channels": []
+    },
+    {
+      "id": "config1",
+      "partitions": [
+        {
+          "id": "partitionA",
+          "tasks": [
+            "setup_and_collect"
+          ],
+          "node": "{{NODE_A}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        },
+        {
+          "id": "partitionB",
+          "tasks": [
+            "FeatureEngineering"
+          ],
+          "node": "{{NODE_B}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        }
+      ],
+      "channels": [
+        {
+          "from_partition": "partitionA",
+          "to_partition": "partitionB"
+        }
+      ]
+    }
+  ]
+}

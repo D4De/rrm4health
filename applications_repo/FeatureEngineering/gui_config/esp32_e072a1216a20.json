@@ -1,0 +1,13 @@
+{
+  "name": "ESP32 E0:72:A1:21:6A:20 - Feature Engineering Walking",
+  "description": "Wi-Fi RAW a 50 Hz; estrazione di 66 feature su finestre di 20 campioni, passo 10, etichetta walking. Eseguire walking durante la raccolta.",
+  "userargs": {
+    "imuname": "E0:72:A1:21:6A:20",
+    "campaignname": "feature_engineering_walking",
+    "samplingfreq": "50",
+    "wifi_interface": "wlan0",
+    "wifi_ssid": "WIFI_126",
+    "wifi_password": "126_WIFI",
+    "activity": "walking"
+  }
+}

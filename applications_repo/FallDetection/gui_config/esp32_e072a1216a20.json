@@ -1,0 +1,18 @@
+{
+  "name": "ESP32 E0:72:A1:21:6A:20 - Fall Detection",
+  "description": "Live WiFi fall detection at 200 Hz with independent 300-sample feature windows.",
+  "userargs": {
+    "imu_names": "E0:72:A1:21:6A:20",
+    "wifi_interface": "wlp2s0",
+    "ssid": "G5_7411",
+    "password": "edna modem",
+    "campaign_name": "fall_detection",
+    "sampling_frequency_hz": "200",
+    "window_size": "300",
+    "step_size": "300",
+    "packet_timeout_s": "20",
+    "static_sma_threshold": "0.325226",
+    "model_path": "mlp_dynamic_only_model.pkl",
+    "output_path": "output/"
+  }
+}

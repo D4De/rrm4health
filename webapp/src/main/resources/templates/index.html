@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAMPAIGN | Home</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+<!-- Carica HTMX (il motore che rende la pagina dinamica) e l'estensione json-enc -->
+<!-- (necessaria per inviare i dati dei form come JSON invece che come form-data standard).-->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10/dist/ext/json-enc.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .htmx-request.htmx-indicator {
+            display: inline-block !important;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-base-200">
+<!-- Home: avvio campagne, lista campagne in corso e modali di configurazione. -->
+
+<!-- TOP BAR -->
+<div class="navbar bg-base-100 shadow-md px-4">
+    <div class="flex-1">
+        <div class="flex items-center gap-3">
+            <div class="avatar">
+                <div class="w-10 rounded-full bg-base-200 flex items-center justify-center overflow-hidden">
+                    <img src="/images/sensor-icon.svg" alt="BSN" class="w-6 h-6"/>
+                </div>
+            </div>
+            <div>
+                <div class="text-lg font-bold">CAMPAIGN</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- USER MENU -->
+    <div class="flex-none">
+        <div class="dropdown dropdown-end">
+            <label tabindex="0" class="btn btn-ghost normal-case">
+                <div class="flex flex-col items-end leading-tight">
+                    <div class="font-semibold" th:text="${#authentication.name}">username</div>
+                    <div class="flex gap-1 justify-end" th:if="${isDev}">
+                        <span class="badge badge-secondary badge-sm">Admin</span>
+                    </div>
+                </div>
+            </label>
+
+            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-56">
+                <li class="pointer-events-none opacity-70">
+                    <div class="flex justify-between">
+                        <span class="font-semibold">Utente</span>
+                        <span th:text="${#authentication.name}">username</span>
+                    </div>
+                </li>
+
+                <li th:if="${isDev}" class="pointer-events-none opacity-70">
+                    <div class="flex justify-between">
+                        <span class="font-semibold">Ruolo</span>
+                        <span>Admin</span>
+                    </div>
+                </li>
+
+                <li class="mt-2">
+                    <form th:action="@{/logout}" method="post" class="w-full">
+                        <button type="submit" class="btn btn-error btn-sm w-full">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<main class="max-w-full mx-auto p-4 lg:p-6">
+
+        <!-- Banner connessione RRM con icona animata -->
+        <div id="rrmConnectionBanner"
+             class="rrm-banner mb-4"
+             th:classappend="${rrmAutoConnected} ? ' success' : ' error'">
+            <div class="rrm-banner-content">
+                <span class="rrm-icon">
+                    <!-- Icona check animata -->
+                    <svg id="rrmConnectionIconConnected"
+                         viewBox="0 0 24 24"
+                         class="icon-check"
+                         th:classappend="${rrmAutoConnected} ? '' : ' hidden'">
+                        <circle cx="12" cy="12" r="10" fill="#4ade80" opacity="0.2"/>
+                        <path d="M7 13l3 3 7-7" stroke="#22c55e" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <!-- Icona disconnessione -->
+                    <svg id="rrmConnectionIconDisconnected"
+                         viewBox="0 0 24 24"
+                         class="icon-error"
+                         th:classappend="${rrmAutoConnected} ? ' hidden' : ''">
+                        <circle cx="12" cy="12" r="10" fill="#f87171" opacity="0.2"/>
+                        <path d="M8 8l8 8M16 8l-8 8" stroke="#ef4444" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span id="rrmConnectionText"
+                      class="rrm-text"
+                      th:text="${rrmAutoConnected} ? 'Sistema connesso!' : 'Sistema non connesso.'">
+                    Sistema non connesso.
+                </span>
+            </div>
+        </div>
+    <div class="flex flex-col gap-6 lg:grid lg:grid-cols-[24rem_minmax(0,1fr)] lg:items-start">
+
+        <!-- SENSOR STATUS -->
+        <section class="w-full lg:w-[24rem] lg:sticky lg:top-6">
+            <div class="flex flex-col gap-4">
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body" id="resourcesStatusCardBody">
+                    <div class="flex items-center justify-between gap-2 mb-3">
+                        <h3 class="card-title">Status sensori in uso</h3>
+                    </div>
+                    <div id="resourcesWarning" class="alert alert-warning py-2 mb-3 hidden">
+                        <span>RRM non connesso: impossibile aggiornare lo stato sensori in tempo reale.</span>
+                    </div>
+                    <div class="space-y-2 max-h-[26rem] overflow-auto pr-1" id="resourcesStatusList">
+                        <div class="alert alert-info py-2">
+                            <span>In attesa dello stato risorse...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body" id="nodesStatusCardBody">
+                    <div class="flex items-center justify-between gap-2 mb-3">
+                        <h3 class="card-title">Nodi online</h3>
+                    </div>
+                    <div id="nodesWarning" class="alert alert-warning py-2 mb-3 hidden">
+                        <span>RRM non connesso: impossibile aggiornare lo stato nodi in tempo reale.</span>
+                    </div>
+                    <div class="space-y-2 max-h-[18rem] overflow-auto pr-1" id="nodesStatusList">
+                        <div class="alert alert-info py-2">
+                            <span>In attesa dello stato nodi...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        <div class="flex min-w-0 flex-col gap-6">
+            <!-- CAMPAIGNS -->
+            <section class="flex-1 min-w-0">
+                <div class="card bg-base-100 shadow-xl">
+                    <div class="card-body">
+
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div>
+                                <h2 class="card-title text-2xl">Campagne</h2>
+                            </div>
+
+                        <div class="flex flex-wrap gap-2">
+                                <button id="btnOpenCreateCampagna" onclick="openCreateCampagnaModal()" class="btn btn-primary btn-sm btn-disabled" disabled title="Serve almeno un nodo online">Avvia</button>
+                                <a href="/campagne/tutte" class="btn btn-outline btn-sm">Tutte le campagne</a>
+                            </div>
+                        </div>
+
+                        <div class="divider my-3"></div>
+
+                        <div class="overflow-x-auto">
+                            <table class="table table-zebra">
+                                <thead>
+                                <tr>
+                                    <th>Persona</th>
+                                    <th>Tipo campagna</th>
+                                    <th>Data inizio</th>
+                                    <th>Stato</th>
+                                    <th class="text-right">Azioni</th>
+                                </tr>
+                                </thead>
+
+                                    <tbody id="campagneTableBody"
+                                        hx-get="/fragments/campagne/home"
+                                        hx-trigger="every 5s"
+                                        hx-target="this"
+                                        hx-swap="innerHTML"
+                                        th:insert="fragments/campagne :: righeHome(${campagneHome})"></tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- QUICK APPLICATIONS -->
+            <section class="flex-1 min-w-0"
+                     th:each="tipo : ${tipiCampagna}"
+                     th:if="${#strings.equalsIgnoreCase(tipo.codice, 'Battery_BLE')}">
+                <div class="card bg-base-100 shadow-xl">
+                    <div class="card-body">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div>
+                                <h2 class="card-title text-2xl">Controllo batteria sensori</h2>
+                                <p class="text-sm text-gray-500">
+                                    Avvia un controllo rapido per verificare la batteria dei sensori disponibili.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="divider my-3"></div>
+
+                        <div class="flex flex-col gap-3 rounded-box border border-base-300 bg-base-200 p-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <div class="font-semibold">Battery check BLE</div>
+                                <div class="text-sm text-gray-500">
+                                    Controlla il livello di batteria dei sensori BLE selezionati senza creare una campagna.
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="button"
+                                        class="btn btn-outline btn-sm"
+                                        data-action="quick-config"
+                                        th:data-type-id="${tipo.id}"
+                                        th:data-script="${tipo.scriptFileName}"
+                                        th:data-codice="${tipo.codice}">
+                                    Configura
+                                </button>
+                                <button type="button"
+                                        class="btn btn-primary btn-sm"
+                                        data-action="quick-play"
+                                        th:data-type-id="${tipo.id}"
+                                        th:data-script="${tipo.scriptFileName}"
+                                        th:data-codice="${tipo.codice}">
+                                    Play
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DEV ONLY -->
+            <aside class="w-full" th:if="${isDev}">
+                <div class="card bg-base-100 shadow-xl">
+                    <div class="card-body">
+                        <h3 class="card-title">Manutenzione</h3>
+                        <p class="text-sm text-gray-500">
+                            Gestione script, sensori e database.
+                        </p>
+                        <div class="card-actions justify-end mt-2">
+                            <a th:href="@{/admin/scripts}" class="btn btn-secondary btn-sm">Vai</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Scheda Framework visibile solo per dev -->
+                <div class="card bg-base-100 shadow-xl mt-6" th:if="${isDev}">
+                    <div class="card-body">
+                        <h3 class="card-title">Framework</h3>
+                        <p class="text-sm text-gray-500">Gestione connessione RRM Global e configurazione framework.</p>
+                        <div class="card-actions justify-end mt-2">
+                            <a th:href="@{/framework}" class="btn btn-outline btn-sm">Vai</a>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+    </div>
+</main>
+
+<!-- MODALE CREAZIONE CAMPAGNA -->
+<dialog id="createCampagnaModal" class="modal">
+    <div class="modal-box max-w-4xl">
+        <form method="dialog"> <!-- dialog è un elemento HTML nativo per creare modali senza bisogno di librerie esterne -->
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+
+        <h3 class="font-bold text-lg mb-4">Avvia Nuova Campagna</h3>
+
+        <!--Uso attributi HTMX-->
+        <form id="createCampagnaForm"
+              class="space-y-4"
+              hx-post="/api/v1/campagne/avvia-subito"
+              hx-ext="json-enc"
+              hx-encoding="json"
+              hx-swap="none"
+              hx-indicator="#savingSpinner">
+
+            <!-- Nome Campagna -->
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">Nome Campagna *</span>
+                </label>
+                <input type="text" id="nomeCampagna" name="nome" placeholder="Es: Monitoraggio ECG"
+                       class="input input-bordered w-full" required />
+            </div>
+
+            <!-- Paziente -->
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">Paziente *</span>
+                </label>
+                <div th:replace="fragments/persone :: selectPazienti(${persone})"></div>
+            </div>
+
+            <!-- Tipo Campagna -->
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">Tipo di Campagna *</span>
+                </label>
+
+                <div id="tipiCampagnaContainer" class="space-y-3">
+                    <div class="card bg-base-200 shadow-sm"
+                         th:each="tipo : ${tipiCampagna}"
+                         th:if="${!#strings.equalsIgnoreCase(tipo.codice, 'Battery_BLE')}">
+                        <div class="card-body p-4">
+                            <div class="form-control">
+                                <div class="flex items-start gap-3">
+                                    <label class="cursor-pointer flex items-start gap-3 flex-1">
+                                        <input type="radio"
+                                               class="radio radio-primary tipo-radio"
+                                               th:id="${'tipo_' + tipo.id}"
+                                               name="idTipoCampagna"
+                                               th:value="${tipo.id}"
+                                               required
+                                               th:data-script="${tipo.scriptFileName}"
+                                               th:data-codice="${tipo.codice}"/>
+                                        <div class="flex-1">
+                                            <span class="label-text font-semibold text-base" th:text="${tipo.descrizione}">Descrizione</span>
+                                        </div>
+                                    </label>
+                                    <button type="button"
+                                            class="btn btn-outline btn-sm"
+                                            data-action="config-tipo"
+                                            th:data-type-id="${tipo.id}">
+                                        Configura
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alert Errori -->
+            <div id="createCampagnaError" class="alert alert-error hidden">
+                <span id="createCampagnaErrorText"></span>
+            </div>
+
+            <!-- Pulsanti -->
+            <div class="modal-action">
+                <button type="button" onclick="document.getElementById('createCampagnaModal').close()"
+                        class="btn btn-ghost">Annulla</button>
+                <button type="submit" class="btn btn-primary" id="btnSaveCampagna">
+                    <span class="loading loading-spinner loading-sm hidden" id="savingSpinner"></span>
+                    Avvia Campagna
+                </button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+<!-- MODALE CONFIGURAZIONE CAMPAGNA -->
+<dialog id="configCampagnaModal" class="modal">
+    <div class="modal-box max-w-3xl">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+
+        <h3 id="configCampagnaTitle" class="font-bold text-lg mb-4">Configura Campagna</h3>
+
+        <input type="hidden" id="scriptFileName" name="scriptFileName" form="createCampagnaForm" th:value="${selectedScriptFileName}" required />
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="form-control" id="frequenzaCampagnaField">
+                <label class="label">
+                    <span class="label-text font-semibold">Frequenza di campionamento (Hz) *</span>
+                    <span class="badge badge-outline" id="frequenzaValue">10 Hz</span>
+                </label>
+                <input type="range" id="frequenzaCampagna" name="frequenza" min="1" max="100" step="1" value="10"
+                       class="range range-primary" form="createCampagnaForm" required />
+                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>1 Hz</span>
+                    <span>100 Hz</span>
+                </div>
+            </div>
+
+            <div class="form-control" id="connettivitaCampagnaField">
+                <label class="label">
+                    <span class="label-text font-semibold">Connettività *</span>
+                </label>
+                <select id="connettivitaCampagna" name="connettivita" class="select select-bordered" form="createCampagnaForm" required>
+                    <option value="">Seleziona...</option>
+                    <option value="BLE">BLE</option>
+                    <option value="ANT">ANT</option>
+                    <option value="WIFI">WIFI</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div id="dbConfigFields" class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">Database per salvataggio dati</span>
+                </label>
+                <select id="dbConfigId" name="idDatabase" class="select select-bordered" form="createCampagnaForm" required>
+                    <option value="" disabled selected>Seleziona database Influx...</option>
+                    <option th:each="db : ${databaseConfigs}"
+                            th:value="${db.id}"
+                            th:text="${db.nome + ' — ' + db.host + ' (' + db.dbName + ')'}">
+                        DB
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-control mt-4" id="timerCampagnaField">
+            <label class="label">
+                <span class="label-text font-semibold">Timer campagna (opzionale)</span>
+                <span class="label-text-alt text-gray-500">Il countdown parte quando lo stato passa a In corso</span>
+            </label>
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                <label class="cursor-pointer flex items-center gap-2">
+                    <input type="checkbox" id="enableDurataCampagna" class="checkbox checkbox-sm" />
+                    <span class="label-text">Limita durata</span>
+                </label>
+                <div class="flex items-center gap-2">
+                    <input type="number"
+                           id="durataCampagna"
+                           min="1"
+                           step="1"
+                           placeholder="2"
+                           class="input input-bordered w-32"
+                           disabled />
+                    <span class="text-sm text-gray-500">minuti</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-control mt-4" id="userEditableParamsSection">
+            <label class="label">
+                <span class="label-text font-semibold">Parametri applicazione</span>
+                <span class="label-text-alt text-gray-500">Configurabili dall'utente per il tipo selezionato</span>
+            </label>
+            <div id="userEditableParamsContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+            <p id="userEditableParamsEmpty" class="text-sm text-gray-500 mt-1">
+                Nessun parametro utente configurato per questo tipo campagna.
+            </p>
+        </div>
+
+        <div class="form-control mt-4">
+            <label class="label">
+                <span class="label-text font-semibold">Sensori *</span>
+                <span class="label-text-alt text-gray-500">Location opzionali: compilale tutte oppure nessuna</span>
+            </label>
+            <div class="mt-1 max-h-64 space-y-2 overflow-y-auto overscroll-contain pr-2" id="sensoriConfigContainer">
+                <div class="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(220px,1fr)] sm:items-center"
+                     th:each="sensore : ${sensori}">
+                  <label class="cursor-pointer flex items-center gap-2">
+                    <input type="checkbox" class="checkbox checkbox-sm"
+                           name="idSensori"
+                           th:value="${sensore.id}"
+                           form="createCampagnaForm"
+                           th:disabled="${sensore.occupato != null && sensore.occupato}" />
+                    <span class="label-text">
+                        <span th:text="${sensore.nome}">Sensore</span>
+                        <span class="text-xs text-gray-500">(<span th:text="${sensore.tipo}">Tipo</span>)</span>
+                        <span th:if="${sensore.occupato != null && sensore.occupato}" class="ml-2 badge badge-error text-xs">In uso</span>
+                    </span>
+                  </label>
+                  <input type="text"
+                         maxlength="255"
+                         class="input input-bordered input-sm w-full sensor-location-input"
+                         th:attr="data-sensor-location-id=${sensore.id}"
+                         placeholder="Location (es. polso destro)"
+                         disabled />
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-action">
+            <button type="button" id="configCampagnaSaveButton" class="btn btn-primary" onclick="saveCampagnaConfigAndClose()">
+                Salva configurazione
+            </button>
+        </div>
+    </div>
+</dialog>
+
+<!-- Alert Successo (fuori dal modale) -->
+<div id="successAlert" class="toast toast-top toast-center hidden">
+    <div class="alert alert-success">
+        <span id="successAlertText">Campagna avviata con successo!</span>
+    </div>
+</div>
+
+<!-- MODALE NOTIFICHE RRM -->
+<dialog id="rrmNotificationModal" class="modal">
+    <div id="rrmNotificationBox" class="modal-box max-w-xl rrm-notification-box rrm-notification-info">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+
+        <div class="rrm-notification-header mb-4">
+            <div class="rrm-notification-icon-wrap">
+                <span id="rrmNotificationIcon" class="rrm-notification-icon">i</span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <h3 class="font-bold text-lg leading-tight">Notifica dall'RRM</h3>
+                <span id="rrmNotificationSeverity" class="badge badge-info mt-2">
+                    <span id="rrmNotificationSeverityText">Info</span>
+                </span>
+            </div>
+        </div>
+
+        <div class="rrm-notification-message-wrap">
+            <p id="rrmNotificationMessage" class="text-base leading-relaxed rrm-notification-message"></p>
+        </div>
+
+        <div class="modal-action">
+            <form method="dialog">
+                <button class="btn btn-primary">Chiudi</button>
+            </form>
+        </div>
+    </div>
+</dialog>
+
+<div th:replace="fragments/live-monitor :: liveMonitor"></div>
+
+<!-- MODALE CREAZIONE PAZIENTE -->
+<dialog id="createPersonaModal" class="modal">
+    <div class="modal-box max-w-2xl">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+
+        <h3 class="font-bold text-lg mb-4">Aggiungi Nuovo Paziente</h3>
+
+        <form id="createPersonaForm"
+              class="space-y-4"
+              hx-post="/api/v1/persone"
+              hx-ext="json-enc"
+              hx-encoding="json"
+              hx-swap="none"
+              hx-indicator="#savingPersonaSpinner">
+
+            <!-- Nome -->
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">Nome *</span>
+                </label>
+                <input type="text" id="nomePersona" name="nome" placeholder="Es: Mario"
+                       class="input input-bordered w-full" required />
+            </div>
+
+            <!-- Cognome -->
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">Cognome *</span>
+                </label>
+                <input type="text" id="cognomePersona" name="cognome" placeholder="Es: Rossi"
+                       class="input input-bordered w-full" required />
+            </div>
+
+            <!-- Data di Nascita -->
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">Data di Nascita</span>
+                </label>
+                <input type="date" id="dataNascitaPersona" name="dataNascita"
+                       class="input input-bordered w-full" />
+            </div>
+
+            <!-- Note -->
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">Note</span>
+                </label>
+                <textarea id="notePersona" name="note" placeholder="Note opzionali sul paziente..."
+                          class="textarea textarea-bordered h-24" rows="3"></textarea>
+            </div>
+
+            <!-- Alert Errori -->
+            <div id="createPersonaError" class="alert alert-error hidden">
+                <span id="createPersonaErrorText"></span>
+            </div>
+
+            <!-- Pulsanti -->
+            <div class="modal-action">
+                <button type="button" onclick="document.getElementById('createPersonaModal').close()"
+                        class="btn btn-ghost">Annulla</button>
+                <button type="submit" class="btn btn-primary" id="btnSavePersona">
+                    <span class="loading loading-spinner loading-sm hidden" id="savingPersonaSpinner"></span>
+                    Aggiungi Paziente
+                </button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+<!-- JavaScript esterno -->
+<script th:src="@{/js/campagne.js}"></script>
+<script>
+// Auto-compilazione nome campagna quando si seleziona un paziente
+document.addEventListener('DOMContentLoaded', function() {
+    function pad2(n) { return String(n).padStart(2, '0'); }
+    function toUnderscore(str) {
+        return (str || '').trim().replace(/\s+/g, '_');
+    }
+    const selectPaziente = document.getElementById('selectPaziente');
+    const nomeCampagnaInput = document.getElementById('nomeCampagna');
+    if (selectPaziente && nomeCampagnaInput) {
+        selectPaziente.addEventListener('change', async function() {
+            const option = selectPaziente.options[selectPaziente.selectedIndex];
+            if (!option || !option.value) return;
+            const nomeCompleto = toUnderscore(option.textContent);
+            // Data odierna in formato YYYYMMDD
+            const now = new Date();
+            const dataStr = `${now.getFullYear()}${pad2(now.getMonth() + 1)}${pad2(now.getDate())}`;
+            // Recupera progressivo via API
+            let progressivo = 1;
+            try {
+                const resp = await fetch(`/api/v1/campagne/paziente/${option.value}`);
+                if (resp.ok) {
+                    const campagne = await resp.json();
+                    if (campagne && Array.isArray(campagne)) {
+                        const prefix = `${nomeCompleto}_${dataStr}_`;
+                        let max = 0;
+                        for (const c of campagne) {
+                            const rawName = (c && (c.nome || c.name)) ? String(c.nome || c.name) : '';
+                            const normalized = toUnderscore(rawName);
+
+                            if (!normalized.startsWith(prefix)) continue;
+                            const m = normalized.match(/_(\d+)$/);
+                            if (!m) continue;
+                            const n = parseInt(m[1], 10);
+                            if (!Number.isNaN(n) && n > max) max = n;
+                        }
+                        progressivo = max + 1;
+                    }
+                }
+            } catch (e) { /* fallback progressivo = 1 */ }
+            nomeCampagnaInput.value = `${nomeCompleto}_${dataStr}_${progressivo}`;
+        });
+    }
+});
+</script>
+<script>
+// Imposta automaticamente il campo scriptFileName quando si seleziona un tipo campagna
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.tipo-radio').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            var script = radio.getAttribute('data-script');
+            document.getElementById('scriptFileName').value = script;
+        });
+    });
+    // Se una radio è già selezionata all'apertura, imposta subito il valore
+    var checked = document.querySelector('.tipo-radio:checked');
+    if (checked) {
+        document.getElementById('scriptFileName').value = checked.getAttribute('data-script');
+    }
+});
+</script>
+<script th:src="@{/js/campagne-live.js}"></script>
+<script th:src="@{/js/sensori-sse.js}"></script>
+<script th:src="@{/js/resources-status.js}"></script>
+<script th:src="@{/js/nodes-status.js}"></script>
+<script th:src="@{/js/rrm-notifications.js}"></script>
+</body>
+<!-- CSS per banner RRM animato -->
+<style>
+.rrm-banner {
+    border-radius: 1rem;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.08);
+    background: rgba(255,255,255,0.7);
+    animation: fadeIn 0.7s;
+    border: 1px solid transparent;
+}
+.rrm-banner.success { border-color: #4ade80; }
+.rrm-banner.error { border-color: #f87171; }
+.rrm-banner-content { display: flex; align-items: center; gap: 1rem; }
+.rrm-icon { display: flex; align-items: center; }
+.icon-check, .icon-error {
+    width: 2.5rem;
+    height: 2.5rem;
+    animation: popIcon 0.5s;
+}
+.rrm-text { font-size: 1.1rem; font-weight: 500; color: #222; }
+
+.rrm-notification-box {
+    border: 1px solid;
+    border-radius: 1rem;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.2);
+}
+
+.rrm-notification-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+}
+
+.rrm-notification-icon-wrap {
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    flex: 0 0 auto;
+}
+
+.rrm-notification-icon {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.rrm-notification-message-wrap {
+    border-radius: 0.9rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid transparent;
+}
+
+.rrm-notification-message {
+    white-space: pre-line;
+}
+
+.rrm-notification-info {
+    background: linear-gradient(160deg, #f8fbff 0%, #eff6ff 100%);
+    border-color: #93c5fd;
+}
+
+.rrm-notification-info .rrm-notification-icon-wrap {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.rrm-notification-info .rrm-notification-message-wrap {
+    background: rgba(219, 234, 254, 0.45);
+    border-color: rgba(147, 197, 253, 0.7);
+}
+
+.rrm-notification-warning {
+    background: linear-gradient(160deg, #fffbeb 0%, #fef3c7 100%);
+    border-color: #f59e0b;
+}
+
+.rrm-notification-warning .rrm-notification-icon-wrap {
+    background: #fde68a;
+    color: #92400e;
+}
+
+.rrm-notification-warning .rrm-notification-message-wrap {
+    background: rgba(254, 243, 199, 0.55);
+    border-color: rgba(245, 158, 11, 0.6);
+}
+
+.rrm-notification-error {
+    background: linear-gradient(160deg, #fff1f2 0%, #ffe4e6 100%);
+    border-color: #f43f5e;
+}
+
+.rrm-notification-error .rrm-notification-icon-wrap {
+    background: #fecdd3;
+    color: #be123c;
+}
+
+.rrm-notification-error .rrm-notification-message-wrap {
+    background: rgba(254, 205, 211, 0.5);
+    border-color: rgba(244, 63, 94, 0.6);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px);}
+    to { opacity: 1; transform: translateY(0);}
+}
+@keyframes popIcon {
+    0% { transform: scale(0.7);}
+    60% { transform: scale(1.2);}
+    100% { transform: scale(1);}
+}
+</style>
+</html>

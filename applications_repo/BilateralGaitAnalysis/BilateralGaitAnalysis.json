@@ -1,0 +1,178 @@
+{
+  "name": "BilateralGaitAnalysis",
+  "taskgraph": [
+    {
+      "id": "acquire_imu_window",
+      "description": "Acquire the next synchronized and overlapping window from two foot IMUs",
+      "depends_on": [],
+      "input": [],
+      "output": ["raw_imu_window"],
+      "required_resources": {
+        "wifi": 1
+      }
+    },
+    {
+      "id": "preprocess_imu_window",
+      "description": "Convert units, align both foot sensors and filter one IMU window",
+      "depends_on": ["acquire_imu_window"],
+      "input": ["raw_imu_window"],
+      "output": ["preprocessed_imu_window"]
+    },
+    {
+      "id": "segment_strides",
+      "description": "Detect left and right stride borders with BarthDtw at the native input sampling rate",
+      "depends_on": ["preprocess_imu_window"],
+      "input": ["preprocessed_imu_window"],
+      "output": ["segmented_stride_list"]
+    },
+    {
+      "id": "detect_gait_events",
+      "description": "Detect initial contact, terminal contact and minimal velocity with HerzerEventDetection",
+      "depends_on": ["preprocess_imu_window", "segment_strides"],
+      "input": ["preprocessed_imu_window", "segmented_stride_list"],
+      "output": ["gait_event_list"]
+    },
+    {
+      "id": "calculate_temporal_parameters",
+      "description": "Calculate stride, stance and swing times for every valid stride",
+      "depends_on": ["detect_gait_events"],
+      "input": ["gait_event_list"],
+      "output": ["temporal_parameters"]
+    },
+    {
+      "id": "reconstruct_stride_trajectories",
+      "description": "Reconstruct stride-level orientation and position when full analysis is enabled",
+      "depends_on": ["preprocess_imu_window", "detect_gait_events"],
+      "input": ["preprocessed_imu_window", "gait_event_list"],
+      "output": ["stride_trajectories"]
+    },
+    {
+      "id": "calculate_spatial_parameters",
+      "description": "Calculate stride length, gait velocity and other spatial parameters in full mode",
+      "depends_on": ["detect_gait_events", "reconstruct_stride_trajectories"],
+      "input": ["gait_event_list", "stride_trajectories"],
+      "output": ["spatial_parameters"]
+    },
+    {
+      "id": "aggregate_gait_results",
+      "description": "Deduplicate overlapping windows and update bilateral trial-wide statistics",
+      "depends_on": ["detect_gait_events", "calculate_temporal_parameters", "calculate_spatial_parameters"],
+      "input": ["gait_event_list", "temporal_parameters", "spatial_parameters"],
+      "output": ["gait_result"]
+    },
+    {
+      "id": "export_gait_result",
+      "description": "Persist incremental and final gait-analysis results without initiating shutdown",
+      "depends_on": ["aggregate_gait_results"],
+      "input": ["gait_result"],
+      "output": []
+    }
+  ],
+  "executable": {
+    "path": "applications/BilateralGaitAnalysis/BilateralGaitAnalysis.py",
+    "parameters": {
+      "imu_names": "E0:72:A1:21:6A:20-E0:72:A1:21:39:60",
+      "sensor_positions": "left_foot-right_foot",
+      "wifi_interface": "wlp2s0",
+      "wifi_ssid": "G5_7411",
+      "wifi_password": "edna modem",
+      "wifi_port": "8023",
+      "acquisition_mode": "wifi",
+      "input_path": "",
+      "subject_id": "{{SUBJECT identifier}}",
+      "trial_id": "{{TRIAL identifier}}",
+      "campaign_name": "{{WIFI CAMPAIGN identifier}}",
+      "initial_counter": "0",
+      "sampling_frequency_hz": "100",
+      "window_duration_s": "20",
+      "window_overlap_s": "2",
+      "lowpass_cutoff_hz": "20",
+      "lightweight_mode": "false",
+      "barth_max_cost": "4.0",
+      "minimum_complete_strides": "3",
+      "output_path": "output/"
+    },
+    "timeouts": {
+      "setup": 60,
+      "loop": 120,
+      "cleanup": 60
+    }
+  },
+  "configurations": [
+    {
+      "id": "config0",
+      "partitions": [
+        {
+          "id": "partition0",
+          "tasks": [
+            "acquire_imu_window",
+            "preprocess_imu_window",
+            "segment_strides",
+            "detect_gait_events",
+            "calculate_temporal_parameters",
+            "reconstruct_stride_trajectories",
+            "calculate_spatial_parameters",
+            "aggregate_gait_results",
+            "export_gait_result"
+          ],
+          "node": "{{NODE_A}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        }
+      ],
+      "channels": []
+    },
+    {
+      "id": "config1",
+      "partitions": [
+        {
+          "id": "partitionA",
+          "tasks": [
+            "acquire_imu_window"
+          ],
+          "node": "{{NODE_A}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        },
+        {
+          "id": "partitionB",
+          "tasks": [
+            "preprocess_imu_window",
+            "segment_strides",
+            "detect_gait_events",
+            "calculate_temporal_parameters",
+            "reconstruct_stride_trajectories",
+            "calculate_spatial_parameters",
+            "aggregate_gait_results",
+            "export_gait_result"
+          ],
+          "node": "{{NODE_B}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        }
+      ],
+      "channels": [
+        {
+          "from_partition": "partitionA",
+          "to_partition": "partitionB"
+        },
+        {
+          "from_partition": "partitionB",
+          "to_partition": "partitionA"
+        }
+      ]
+    }
+  ]
+}

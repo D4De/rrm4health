@@ -1,0 +1,14 @@
+{
+  "name": "IMUX7X7-IMU02XC IMUs Configuration",
+  "description": "Configuration for breath analysis with IMUX7X7-IMU02XC",
+  "userargs": {
+    "imunames": "IMUX7X7-IMU02XC",
+    "adapter": "hci0",
+    "campaignname": "20251110fg",
+    "samplingfreq": "10",
+    "method_output": "DB",
+    "path_FILE": "",
+    "host_DB": "131.175.120.117",
+    "port_DB": "1883"
+  }
+}

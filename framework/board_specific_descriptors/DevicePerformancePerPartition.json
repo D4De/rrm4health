@@ -1,0 +1,20 @@
+{
+    "BreathAnalysis": {
+        "partitionA": {
+            "arm64_4_1800.0_powered": {
+                "cpu_percentage": 47.22298469624242,
+                "core_avg_frequency": 1680.3312640000004,
+                "power_usage_estimate": 0.0
+            }
+        }
+    },
+    "Collector_BLE": {
+        "partitionA": {
+            "arm64_4_1800.0_powered": {
+                "cpu_percentage": 5.605535384615385,
+                "core_avg_frequency": 1331.8400000000001,
+                "power_usage_estimate": 0.0
+            }
+        }
+    }
+}

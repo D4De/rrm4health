@@ -1,0 +1,207 @@
+{
+    "local_nodes": [
+    {
+      "id": "ln_001",
+      "node_class": "accelerated_edge_node",
+      "status": "active",
+
+      "location": {
+        "area": "traffic_square",
+        "coordinates": {
+          "latitude": 45.4642,
+          "longitude": 9.19,
+          "altitude_m": null
+        },
+        "indoor": false,
+        "physical_exposure": "outdoor"
+      },
+
+      "local_agent": {
+        "present": true,
+        "status": "active",
+        "monitoring_enabled": true,
+        "local_control_enabled": true,
+        "last_report": "2026-04-25T18:29:59Z"
+      },
+
+      "hardware": {
+        "cpu": {
+          "present": true,
+          "architecture": "ARM64",
+          "model": "Cortex-A78AE",
+          "sockets": 1,
+          "physical_cores": 8,
+          "logical_cores": 8,
+          "available_cores": 3,
+          "frequency_min_mhz": 800,
+          "frequency_max_mhz": 2200,
+          "current_frequency_mhz": 1800,
+          "dvfs_supported": true
+        },
+        "gpu": {
+          "present": true,
+          "model": "NVIDIA Jetson GPU",
+          "memory_mb": 4096,
+          "available_memory_mb": 2048,
+          "cuda_supported": true,
+          "current_usage_percent": 41.8
+        },
+        "npu": {
+          "present": null,
+          "model": null,
+          "tops": null,
+          "current_usage_percent": null
+        },
+        "fpga": {
+          "present": null,
+          "model": null,
+          "logic_units": null,
+          "current_usage_percent": null
+        },
+        "memory": {
+          "total_mb": 8192,
+          "available_mb": 3120,
+          "used_mb": 5072
+        },
+        "storage": {
+          "total_gb": 128,
+          "available_gb": 74,
+          "used_gb": 54,
+          "type": "ssd"
+        }
+      },
+
+      "software": {
+        "os": "Linux",
+        "kernel": "5.15",
+        "container_runtime": "Docker",
+        "orchestration_agent": "local_agent",
+        "supported_acceleration": ["cuda"],
+        "supported_protocols": ["MQTT", "HTTP", "RTSP"],
+        "supported_task_types": [
+          "data_acquisition",
+          "preprocessing",
+          "analytics",
+          "ml_inference",
+          "event_detection",
+          "actuation_control"
+        ]
+      },
+
+      "network_interfaces": [
+        {
+          "id": "eth0",
+          "type": "ethernet",
+          "status": "active",
+          "bandwidth_mbps": 1000,
+          "ip_address": null,
+          "mac_address": null
+        },
+        {
+          "id": "wlan0",
+          "type": "wifi",
+          "status": null,
+          "bandwidth_mbps": null,
+          "ip_address": null,
+          "mac_address": null
+        }
+      ],
+
+      "cyber_physical_interfaces": {
+        "sensors": [
+          {
+            "id": "cam_001",
+            "type": "camera",
+            "status": "active",
+            "location": "traffic_square",
+            "data_type": "video",
+            "sampling_rate_hz": 30,
+            "resolution": "1920x1080",
+            "field_of_view": null,
+            "associated_node": "ln_001"
+          },
+          {
+            "id": "air_quality_001",
+            "type": "air_quality_sensor",
+            "status": "active",
+            "location": "traffic_square",
+            "data_type": "scalar",
+            "sampling_rate_hz": 1,
+            "resolution": null,
+            "field_of_view": null,
+            "associated_node": "ln_001"
+          }
+        ],
+        "actuators": [
+          {
+            "id": "traffic_light_001",
+            "type": "traffic_light_controller",
+            "status": "active",
+            "location": "traffic_square",
+            "control_latency_ms": 20,
+            "associated_node": "ln_001"
+          }
+        ]
+      },
+
+      "runtime_state": {
+        "cpu_usage_percent": 64.2,
+        "gpu_usage_percent": 41.8,
+        "npu_usage_percent": null,
+        "fpga_usage_percent": null,
+        "memory_usage_mb": 5072,
+        "storage_usage_gb": 54,
+        "temperature_celsius": 70.5,
+        "power_source": "grid",
+        "battery_percent": null,
+        "energy_budget_wh": null,
+        "power_consumption_w": null,
+        "network_latency_ms_to_fo": 8.4,
+        "last_heartbeat": "2026-04-25T18:29:59Z"
+      },
+
+      "health": {
+        "availability": "available",
+        "degraded": false,
+        "failure_reason": null,
+        "reliability_score": null,
+        "maintenance_required": false
+      },
+
+      "resource_control": {
+        "cpu_quota_supported": true,
+        "memory_limit_supported": true,
+        "gpu_partitioning_supported": false,
+        "dvfs_control_supported": true,
+        "task_migration_supported": true,
+        "container_pause_resume_supported": true,
+        "local_scaling_supported": true
+      },
+
+      "current_workload": {
+        "running_containers": 4,
+        "running_tasks": [
+          {
+            "task_id": "task_traffic_detection_01",
+            "application_id": "app_traffic_monitoring",
+            "tenant_id": "municipality",
+            "container_id": "ctr_001",
+            "status": "running",
+            "assigned_cpu_cores": 2,
+            "assigned_memory_mb": 1024,
+            "assigned_gpu": true,
+            "assigned_npu": null,
+            "assigned_fpga": null
+          }
+        ],
+        "reserved_capacity": {
+          "cpu_cores": 1,
+          "memory_mb": 512,
+          "gpu_fraction": null,
+          "npu_fraction": null,
+          "fpga_fraction": null
+        }
+      }
+    }
+  ]
+}

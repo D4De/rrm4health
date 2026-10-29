@@ -1,0 +1,88 @@
+{
+    "name": "template_test",
+    "taskgraph": [
+      {
+        "id": "main_task",
+        "description": "Only a main task that requires a camera and 4 IMUs (one of this four must be a IMU with a specified ID), with specific features, to perform some processing",
+        "depends_on": [],
+        "input": [],
+        "output": [],
+
+        "requires": [
+            {
+                "type": "ResourceRequest",
+                "count": 1,
+                "exclusive": true,
+                "parameter_linked": "camera",
+                "separator": "",
+                "features": {
+                  "camera": {"resolution": "1920x1080","fps": "30"},
+                  "wifi": {},
+                  "location": { "building": "B10"}
+                }
+
+            },
+            {
+              "type": "ResourceRequest",
+              "count": 3,
+              "exclusive": true,
+              "parameter_linked": "imus",
+              "separator": "-",
+              "features": {
+                "gyro": {},
+                "acc": {},
+                "magn": {},
+                "ble": {},
+                "location": { "building": "B10"}
+              }
+
+          },
+            {
+              "type": "DeviceRequest",
+              "exclusive": true,
+              "parameter_linked": "imus",
+              "separator": "",
+              "device_id": ["IMUX7X7"]
+            }
+            
+        ]
+
+          
+      }
+    ],
+    "executable": {
+      "path": "applications/template_test/template_test.py",
+      "parameters": {
+        "parameterA": "{{A parameter not linked to any resource}}",
+        "imus": "{{IMUXXX-...}}",
+        "camera": "{{CameraXXX}}"
+      },
+      "timeouts": {
+        "setup": 30,
+        "loop": 5,
+        "cleanup": 10
+      }
+    },
+    "configurations": [
+      {
+        "id": "config0",
+        "partitions": [
+          {
+            "id": "complete_application",
+            "tasks": [
+              "main_task"
+            ],
+            "node": "{{NODE_A}}",
+            "required_resources": {
+              "ram": 0,
+              "disk": 0,
+              "network_upload": 0,
+              "network_download": 0
+            }
+          }
+        ],
+        "channels": []
+      }
+    ]
+  }
+  

@@ -1,0 +1,137 @@
+{
+  "Arduino_Nano_33_BLE": {
+    "EXCL_BY_DESIGN": true,
+    "sensors": {
+      "gyro": {},
+      "acc": {},
+      "magn": {}
+    },
+    "software": {},
+    "connections": {
+      "bluetooth": {}
+    },
+    "power": {
+      "cable-powered": {}
+    }
+  },
+  "Arduino_Nano_33_BLE_SENSE": {
+    "EXCL_BY_DESIGN": true,
+    "sensors": {
+      "gyro": {},
+      "acc": {},
+      "magn": {}
+    },
+    "software": {},
+    "connections": {
+      "bluetooth": {}
+    },
+    "power": {
+      "cable-powered": {}
+    }
+  },
+  "Arduino_Nano_33_BLE_REV2": {
+    "EXCL_BY_DESIGN": true,
+    "sensors": {
+      "gyro": {},
+      "acc": {},
+      "magn": {}
+    },
+    "software": {},
+    "connections": {
+      "bluetooth": {}
+    },
+    "power": {
+      "cable-powered": {}
+    }
+  },
+  "Arduino_Nano_33_IoT": {
+    "EXCL_BY_DESIGN": false,
+    "sensors": {
+      "gyro": {},
+      "acc": {}
+    },
+    "software": {},
+    "connections": {
+      "bluetooth": {},
+      "wifi": {}
+    },
+    "power": {
+      "cable-powered": {}
+    }
+  },
+  "nRF52840": {
+    "EXCL_BY_DESIGN": true,
+    "sensors": {
+      "gyro": {},
+      "acc": {},
+      "magn": {}
+    },
+    "software": {},
+    "connections": {
+      "bluetooth": {}
+    },
+    "power": {
+      "cable-powered": {},
+      "battery-powered": {}
+    }
+  },
+  "ESP32C3_mini": {
+    "EXCL_BY_DESIGN": true,
+    "sensors": {
+      "gyro": {},
+      "acc": {}
+    },
+    "software": {},
+    "connections": {
+      "wifi": {}
+    },
+    "power": {
+      "cable-powered": {}
+    }
+  },
+  "XYZ_V1": {
+    "EXCL_BY_DESIGN": false,
+    "sensors": {
+      "gyro": {},
+      "camera": {
+        "resolution": "1920x1080",
+        "fps": 30
+      }
+    },
+    "software": {},
+    "connections": {
+      "wifi": {}
+    },
+    "power": {
+      "cable-powered": {}
+    }
+  },
+  "Netcam": {
+    "EXCL_BY_DESIGN": false,
+    "sensors": {
+      "camera": {
+        "resolution": "640x480",
+        "fps": 30
+      }
+    },
+    "software": {},
+    "connections": {
+      "wifi": {},
+      "usb": {}
+    },
+    "power": {
+      "cable-powered": {}
+    }
+  },
+  "External_Bluetooth_Antenna_Generic": {
+    "EXCL_BY_DESIGN": false,
+    "sensors": {},
+    "software": {},
+    "connections": {
+      "bluetooth": {}
+    },
+    "power": {
+      "cable-powered": {}
+    }
+  }
+}

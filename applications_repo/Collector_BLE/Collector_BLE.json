@@ -1,0 +1,57 @@
+{
+  "name": "Collector_BLE",
+  "taskgraph": [
+    {
+      "id": "setup_and_collect",
+      "description": "Setup and connect all the imus",
+      "depends_on": [],
+      "input": [],
+      "output": [
+      ],
+      "required_resources": {
+        "bluetooth": 1
+      },
+        "requires": [
+        ]
+    }
+  ],
+  "executable": {
+    "path": "applications/Collector_BLE/Collector_BLE.py",
+    "parameters": {
+      "imunames": "{{IMUXXX-...}}",
+      "adapter": "hci0",
+      "campaignname": "{{CAMP_NAME}}",
+      "samplingfreq": "10",
+      "rawquat": "True",
+      "MQTT_SERVER": "131.175.120.117",
+      "MQTT_PORT": "1883",
+      "MQTT_MSG": "aaac/campaign/imu"
+    },
+    "timeouts": {
+      "setup": 60,
+      "loop": 5,
+      "cleanup": 10
+    }
+  },
+  "configurations": [
+    {
+      "id": "config0",
+      "partitions": [
+        {
+          "id": "partitionA",
+          "tasks": [
+            "setup_and_collect"
+          ],
+          "node": "{{NODE_A}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        }
+      ],
+      "channels": []
+    }
+  ]
+}

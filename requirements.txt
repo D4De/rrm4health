@@ -1,0 +1,11 @@
+# Core System Requirements for rrm4health Framework
+# Install with: pip install -r requirements.txt
+
+# Communication
+pyzmq>=25.0.0
+
+# System monitoring
+psutil>=5.9.0
+
+# Data processing (used in core communication)
+numpy>=1.24.0

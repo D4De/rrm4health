@@ -1,0 +1,57 @@
+{
+  "name": "Collector_WIFI",
+  "taskgraph": [
+    {
+      "id": "setup_and_collect",
+      "description": "Setup and connect all the imus",
+      "depends_on": [],
+      "input": [],
+      "output": [
+      ],
+      "required_resources": {
+        "wifi": 1
+      }
+    }
+  ],
+  "executable": {
+    "path": "applications/Collector_WIFI/Collector_WIFI.py",
+    "parameters": {
+      "imunames": "{{b0:b2:1c:4a:00:38-...}}",
+      "ssid": "G5_7411",
+      "password": "edna modem",
+      "adapter": "wlp2s0",
+      "campaignname": "{{CAMP_NAME}}",
+      "samplingfreq": "10",
+      "rawquat": "True",
+      "host_DB": "131.175.120.117",
+      "port_DB": "1883",
+      "database_DB": "aaac/campaign/imu"
+    },
+    "timeouts": {
+      "setup": 60,
+      "loop": 5,
+      "cleanup": 10
+    }
+  },
+  "configurations": [
+    {
+      "id": "config0",
+      "partitions": [
+        {
+          "id": "partitionA",
+          "tasks": [
+            "setup_and_collect"
+          ],
+          "node": "{{NODE_A}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        }
+      ],
+      "channels": []
+    }
+  ]
+}

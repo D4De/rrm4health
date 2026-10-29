@@ -1,0 +1,118 @@
+{
+  "name": "ActivityRecognitionCNN",
+  "taskgraph": [
+    {
+      "id": "setup_and_collect",
+      "description": "Collect RAW accelerometer and gyroscope data from one IMU through Wi-Fi and build a 100-sample window",
+      "depends_on": [],
+      "input": [],
+      "output": [
+        "imu_window"
+      ],
+      "required_resources": {
+        "network": 1
+      },
+      "requires": [
+        {
+          "type": "ResourceRequest",
+          "count": 1,
+          "exclusive": true,
+          "separator": "",
+          "parameter_linked": "imuname",
+          "features": {
+            "gyro": {},
+            "acc": {},
+            "wifi": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "CNNInference",
+      "description": "Normalize the IMU window using the training mean and standard deviation and run the 1D CNN activity classifier",
+      "depends_on": [
+        "setup_and_collect"
+      ],
+      "input": [
+        "imu_window"
+      ],
+      "output": []
+    }
+  ],
+  "executable": {
+    "path": "applications/ActivityRecognitionCNN/ActivityRecognitionCNN.py",
+    "parameters": {
+      "imuname": "{{IMU_NAME}}",
+      "imuaddress": "{{IMU_IP_OR_MAC}}",
+      "campaignname": "{{CAMP_NAME}}",
+      "samplingfreq": "{{SAMPLING_FREQUENCY}}",
+      "wifi_interface": "{{WIFI_INTERFACE}}",
+      "wifi_ssid": "{{WIFI_SSID}}",
+      "wifi_password": "{{WIFI_PASSWORD}}"
+    },
+    "timeouts": {
+      "setup": 60,
+      "loop": 5,
+      "cleanup": 10
+    }
+  },
+  "configurations": [
+    {
+      "id": "config0",
+      "partitions": [
+        {
+          "id": "partitionA",
+          "tasks": [
+            "setup_and_collect",
+            "CNNInference"
+          ],
+          "node": "{{NODE_A}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        }
+      ],
+      "channels": []
+    },
+    {
+      "id": "config1",
+      "partitions": [
+        {
+          "id": "partitionA",
+          "tasks": [
+            "setup_and_collect"
+          ],
+          "node": "{{NODE_A}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        },
+        {
+          "id": "partitionB",
+          "tasks": [
+            "CNNInference"
+          ],
+          "node": "{{NODE_B}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        }
+      ],
+      "channels": [
+        {
+          "from_partition": "partitionA",
+          "to_partition": "partitionB"
+        }
+      ]
+    }
+  ]
+}

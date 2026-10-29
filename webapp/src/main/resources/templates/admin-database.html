@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAMPAIGN | Manutenzione - Database</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-base-200">
+<!-- Manutenzione database: elenco configurazioni e form di inserimento. -->
+
+<div class="navbar bg-base-100 shadow-md px-4">
+    <div class="flex-1">
+        <div class="flex items-center gap-3">
+            <div class="avatar">
+                <div class="w-10 rounded-full bg-base-200 flex items-center justify-center overflow-hidden">
+                    <img src="/images/sensor-icon.svg" alt="BSN" class="w-6 h-6"/>
+                </div>
+            </div>
+            <div>
+                <a href="/" class="text-lg font-bold hover:text-primary">CAMPAIGN</a>
+            </div>
+        </div>
+    </div>
+    <div class="flex-none">
+        <div class="dropdown dropdown-end">
+            <label tabindex="0" class="btn btn-ghost normal-case">
+                <div class="flex flex-col items-end leading-tight">
+                    <div class="font-semibold" th:text="${#authentication.name}">username</div>
+                </div>
+            </label>
+
+            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-56">
+                <li class="pointer-events-none opacity-70">
+                    <a class="flex justify-between">
+                        <span class="font-semibold">Utente</span>
+                        <span th:text="${#authentication.name}">username</span>
+                    </a>
+                </li>
+                <li class="mt-2">
+                    <form th:action="@{/logout}" method="post" class="w-full">
+                        <button type="submit" class="btn btn-error btn-sm w-full">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<main class="max-w-5xl mx-auto p-4 lg:p-6">
+    <div class="tabs tabs-boxed mb-6">
+        <a href="/admin/scripts" class="tab" th:classappend="${activeTab == 'scripts'} ? ' tab-active' : ''">Script</a>
+        <a href="/admin/sensori" class="tab" th:classappend="${activeTab == 'sensori'} ? ' tab-active' : ''">Sensori</a>
+        <a href="/admin/database" class="tab" th:classappend="${activeTab == 'database'} ? ' tab-active' : ''">Database</a>
+        <a href="/admin/mqtt" class="tab" th:classappend="${activeTab == 'mqtt'} ? ' tab-active' : ''">MQTT</a>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-2xl">Manutenzione - Database</h2>
+            <p class="text-sm text-gray-500">
+                Gestisci l'elenco dei database disponibili per il salvataggio dei dati.
+            </p>
+            <p class="text-sm text-gray-500">
+                ATTENZIONE: I dati verranno comunque salvati su un DB collegato al server MQTT.
+            </p>
+
+            <div th:if="${databaseSuccess}" class="alert alert-success mt-4">
+                <span th:text="${databaseSuccess}">Database aggiunto con successo.</span>
+            </div>
+            <div th:if="${databaseError}" class="alert alert-error mt-4">
+                <span th:text="${databaseError}">Errore durante la creazione.</span>
+            </div>
+
+            <div class="divider my-4"></div>
+
+            <form action="/admin/database" method="post" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-semibold">Nome *</span>
+                    </label>
+                    <input type="text" name="nome" class="input input-bordered" placeholder="Influx locale" required />
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-semibold">Indirizzo host *</span>
+                    </label>
+                    <input type="text" name="host" class="input input-bordered" placeholder="131.175.120.117" required />
+                </div>
+
+                <div class="form-control lg:col-span-2">
+                    <label class="label">
+                        <span class="label-text font-semibold">Nome database *</span>
+                    </label>
+                    <input type="text" name="dbName" class="input input-bordered" placeholder="iomdb" required />
+                </div>
+
+                <div class="lg:col-span-2">
+                    <button type="submit" class="btn btn-primary w-full">Aggiungi database</button>
+                </div>
+            </form>
+
+            <div class="divider my-4"></div>
+
+            <div class="overflow-x-auto">
+                <table class="table table-zebra">
+                    <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Indirizzo</th>
+                        <th>Database</th>
+                        <th class="text-right">Azioni</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(databaseConfigs)}">
+                        <td colspan="4" class="text-center text-gray-500 py-6">Nessun database configurato.</td>
+                    </tr>
+                    <tr th:each="db : ${databaseConfigs}">
+                        <td class="font-semibold" th:text="${db.nome}">Influx</td>
+                        <td class="font-mono" th:text="${db.host}">127.0.0.1</td>
+                        <td th:text="${db.dbName}">iomdb</td>
+                        <td class="text-right">
+                            <form th:action="@{'/admin/database/' + ${db.id} + '/elimina'}" method="post"
+                                  onsubmit="return confirm('Eliminare definitivamente il database?');">
+                                <button type="submit" class="btn btn-outline btn-xs btn-error">Elimina</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

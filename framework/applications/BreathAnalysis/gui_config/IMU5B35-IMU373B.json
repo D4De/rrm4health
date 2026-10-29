@@ -1,0 +1,14 @@
+{
+  "name": "IMU5B35-IMU373B IMUs Configuration",
+  "description": "Configuration for breath analysis with IMU5B35-IMU373B",
+  "userargs": {
+    "imunames": "IMU5B35-IMU373B",
+    "adapter": "hci0",
+    "campaignname": "20251110cb",
+    "samplingfreq": "10",
+    "method_output": "DB",
+    "path_FILE": "",
+    "host_DB": "131.175.120.117",
+    "port_DB": "1883"
+  }
+}

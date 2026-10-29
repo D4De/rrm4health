@@ -1,0 +1,1 @@
+"""RRM Local node component"""

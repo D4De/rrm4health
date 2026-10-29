@@ -1,0 +1,6 @@
+# The supplied pickle was produced with these NumPy/scikit-learn generations.
+numpy>=2.0,<3.0
+scikit-learn==1.7.2
+joblib>=1.4,<2.0
+
+pyzmq==26.3.0

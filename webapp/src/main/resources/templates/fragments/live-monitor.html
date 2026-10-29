@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Fragment live monitor: modal con stato sensori e grafici realtime (Chart.js). -->
+<div th:fragment="liveMonitor">
+    <dialog id="liveMonitorModal" class="modal">
+        <div class="modal-box max-w-full bg-base-100 text-base-content">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-6">
+                <div>
+                    <h3 class="font-bold text-lg" id="liveCampaignName">Campagna</h3>
+                    <p class="text-sm text-base-content/70" id="liveCampaignMeta">Monitoraggio in tempo reale</p>
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" class="btn btn-success btn-sm" onclick="window.BSNLiveMonitor.close()">Chiudi</button>
+                    <button type="button" class="btn btn-error btn-sm" onclick="window.BSNLiveMonitor.stop()">Termina</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+                <div class="card bg-base-200 text-base-content border border-base-300">
+                    <div class="card-body">
+                        <h4 class="font-semibold uppercase tracking-widest text-xs text-base-content/60">Sensori attivi</h4>
+                        <div id="liveSensorList" class="space-y-2 text-sm"></div>
+                    </div>
+                </div>
+                <div class="card bg-base-200 text-base-content border border-base-300 lg:col-span-2">
+                    <div class="card-body">
+                        <h4 class="font-semibold uppercase tracking-widest text-xs text-base-content/60">Stato batteria</h4>
+                        <div id="liveBatteryList" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="liveApplicationOutputSection"
+                 class="hidden border-y border-base-300 py-5 mb-6">
+                <div class="flex items-center justify-between gap-3 mb-3">
+                    <h4 class="font-semibold uppercase tracking-widest text-xs text-base-content/70">
+                        Output applicazione
+                    </h4>
+                    <span class="text-xs text-base-content/50">Ultime 10 righe</span>
+                </div>
+                <div id="liveApplicationOutputTables" class="space-y-5"></div>
+            </div>
+
+            <div class="mb-4 flex items-center justify-end">
+                <label class="form-control w-full max-w-xs">
+                    <div class="label py-0 pb-2">
+                        <span class="label-text text-base-content/70 text-xs uppercase tracking-widest">Vista grafici</span>
+                    </div>
+                    <select id="liveChartLayoutSelect" class="select select-sm select-bordered bg-base-100 text-base-content">
+                        <option value="axis">Per asse</option>
+                        <option value="sensor">Per IMU</option>
+                    </select>
+                </label>
+            </div>
+
+            <div id="liveChartsAxisView" class="space-y-6">
+                <div class="card bg-base-200 border border-base-300">
+                    <div class="card-body gap-4">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-semibold uppercase tracking-widest text-xs text-base-content/70">Accelerazione</h4>
+                            <div class="text-xs text-base-content/50 uppercase tracking-widest">M/S^2</div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                            <div class="rounded-xl border border-base-300 bg-base-100 p-3">
+                                <div class="text-xs uppercase tracking-widest text-base-content/60 mb-2">X</div>
+                                <div class="h-28">
+                                    <canvas id="chart-ax" class="w-full h-full"></canvas>
+                                </div>
+                            </div>
+                            <div class="rounded-xl border border-base-300 bg-base-100 p-3">
+                                <div class="text-xs uppercase tracking-widest text-base-content/60 mb-2">Y</div>
+                                <div class="h-28">
+                                    <canvas id="chart-ay" class="w-full h-full"></canvas>
+                                </div>
+                            </div>
+                            <div class="rounded-xl border border-base-300 bg-base-100 p-3">
+                                <div class="text-xs uppercase tracking-widest text-base-content/60 mb-2">Z</div>
+                                <div class="h-28">
+                                    <canvas id="chart-az" class="w-full h-full"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card bg-base-200 border border-base-300">
+                    <div class="card-body gap-4">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-semibold uppercase tracking-widest text-xs text-base-content/70">Giroscopio</h4>
+                            <div class="text-xs text-base-content/50 uppercase tracking-widest">DEG/S</div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                            <div class="rounded-xl border border-base-300 bg-base-100 p-3">
+                                <div class="text-xs uppercase tracking-widest text-base-content/60 mb-2">X</div>
+                                <div class="h-28">
+                                    <canvas id="chart-gx" class="w-full h-full"></canvas>
+                                </div>
+                            </div>
+                            <div class="rounded-xl border border-base-300 bg-base-100 p-3">
+                                <div class="text-xs uppercase tracking-widest text-base-content/60 mb-2">Y</div>
+                                <div class="h-28">
+                                    <canvas id="chart-gy" class="w-full h-full"></canvas>
+                                </div>
+                            </div>
+                            <div class="rounded-xl border border-base-300 bg-base-100 p-3">
+                                <div class="text-xs uppercase tracking-widest text-base-content/60 mb-2">Z</div>
+                                <div class="h-28">
+                                    <canvas id="chart-gz" class="w-full h-full"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card bg-base-200 border border-base-300">
+                    <div class="card-body gap-4">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-semibold uppercase tracking-widest text-xs text-base-content/70">Magnetometro</h4>
+                            <div class="text-xs text-base-content/50 uppercase tracking-widest">UT</div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                            <div class="rounded-xl border border-base-300 bg-base-100 p-3">
+                                <div class="text-xs uppercase tracking-widest text-base-content/60 mb-2">X</div>
+                                <div class="h-28">
+                                    <canvas id="chart-mx" class="w-full h-full"></canvas>
+                                </div>
+                            </div>
+                            <div class="rounded-xl border border-base-300 bg-base-100 p-3">
+                                <div class="text-xs uppercase tracking-widest text-base-content/60 mb-2">Y</div>
+                                <div class="h-28">
+                                    <canvas id="chart-my" class="w-full h-full"></canvas>
+                                </div>
+                            </div>
+                            <div class="rounded-xl border border-base-300 bg-base-100 p-3">
+                                <div class="text-xs uppercase tracking-widest text-base-content/60 mb-2">Z</div>
+                                <div class="h-28">
+                                    <canvas id="chart-mz" class="w-full h-full"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="liveChartsSensorView" class="hidden space-y-6">
+                <div id="liveSensorChartsContainer" class="space-y-6"></div>
+            </div>
+        </div>
+    </dialog>
+</div>
+
+</body>
+</html>

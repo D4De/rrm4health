@@ -1,0 +1,110 @@
+{
+  "name": "FallDetection",
+  "taskgraph": [
+    {
+      "id": "acquire_feature_packet",
+      "description": "Acquire one 28-feature window from an ESP32-C3 MPU6050 over WiFi",
+      "depends_on": [],
+      "input": [],
+      "output": ["feature_packet"],
+      "required_resources": {"wifi": 1}
+    },
+    {
+      "id": "prepare_feature_vector",
+      "description": "Validate feature order and convert acceleration-derived values from g to m/s2",
+      "depends_on": ["acquire_feature_packet"],
+      "input": ["feature_packet"],
+      "output": ["prepared_packet"]
+    },
+    {
+      "id": "classify_fall_risk",
+      "description": "Apply the static gate and classify dynamic activity with the trained MLP pipeline",
+      "depends_on": ["prepare_feature_vector"],
+      "input": ["prepared_packet"],
+      "output": ["detection_result"]
+    },
+    {
+      "id": "persist_detection",
+      "description": "Log and persist each fall-detection result as JSON Lines",
+      "depends_on": ["classify_fall_risk"],
+      "input": ["detection_result"],
+      "output": []
+    }
+  ],
+  "executable": {
+    "path": "applications/FallDetection/FallDetection.py",
+    "parameters": {
+      "imu_names": "{{b0:b2:1c:4a:00:38-...}}",
+      "wifi_interface": "wlp2s0",
+      "ssid": "G5_7411",
+      "password": "edna modem",
+      "campaign_name": "fall_detection",
+      "sampling_frequency_hz": "200",
+      "window_size": "300",
+      "step_size": "300",
+      "packet_timeout_s": "20",
+      "static_sma_threshold": "0.325226",
+      "model_path": "mlp_dynamic_only_model.pkl",
+      "output_path": "output/"
+    },
+    "timeouts": {
+      "setup": 90,
+      "loop": 30,
+      "cleanup": 30
+    }
+  },
+  "configurations": [
+    {
+      "id": "config0",
+      "partitions": [
+        {
+          "id": "partition0",
+          "tasks": [
+            "acquire_feature_packet",
+            "prepare_feature_vector",
+            "classify_fall_risk",
+            "persist_detection"
+          ],
+          "node": "{{NODE_A}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        }
+      ],
+      "channels": []
+    },
+    {
+      "id": "config1",
+      "partitions": [
+        {
+          "id": "partitionA",
+          "tasks": ["acquire_feature_packet", "prepare_feature_vector"],
+          "node": "{{NODE_A}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        },
+        {
+          "id": "partitionB",
+          "tasks": ["classify_fall_risk", "persist_detection"],
+          "node": "{{NODE_B}}",
+          "required_resources": {
+            "ram": 0,
+            "disk": 0,
+            "network_upload": 0,
+            "network_download": 0
+          }
+        }
+      ],
+      "channels": [
+        {"from_partition": "partitionA", "to_partition": "partitionB"}
+      ]
+    }
+  ]
+}

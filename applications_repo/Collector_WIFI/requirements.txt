@@ -1,0 +1,11 @@
+# Requirements for BreathAnalysis Application
+# Install with: pip install -r requirements.txt
+#For the framework, we need to install the following packages:
+zmq
+numpy>=1.24.0
+pandas>=2.0.0
+# MQTT protocol for message publishing
+paho-mqtt>=1.6.0
+
+#
+

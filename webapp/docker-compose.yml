@@ -1,0 +1,46 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: bsn_mosquitto
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+
+  mariadb:
+    image: mariadb:11
+    container_name: bsn_mariadb
+    restart: unless-stopped
+    #variabili d'ambiente
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpwd
+      MYSQL_DATABASE: bsn_db
+      MYSQL_USER: bsn_user
+      MYSQL_PASSWORD: bsn_pwd
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./setupdata:/docker-entrypoint-initdb.d:ro
+
+  influxdb:
+    image: influxdb:1.8
+    container_name: bsn_influxdb
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    environment:
+      INFLUXDB_DB: bsn_timeseries
+      INFLUXDB_HTTP_AUTH_ENABLED: "false"
+    volumes:
+      - influxdb_data:/var/lib/influxdb
+
+#Definizione dei volumi per non perdere i dati se riavvii il container
+volumes:
+  mosquitto_data:
+  mosquitto_log:
+  mariadb_data:
+  influxdb_data:

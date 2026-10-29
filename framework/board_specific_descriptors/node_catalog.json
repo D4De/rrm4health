@@ -1,0 +1,236 @@
+{
+  "raspberry_pi_4b_4gb": {
+    "id": "raspberry_pi_4b_4gb",
+    "description": "Edge node based on Raspberry Pi 4 Model B for BLE acquisition and local preprocessing",
+    "max_temp": 80.0,
+    "max_network_speed": 940.0,
+    "board": {
+      "vendor": "Raspberry Pi Foundation",
+      "model": "Raspberry Pi 4 Model B",
+      "revision": "1.4",
+      "form_factor": "SBC"
+    },
+    "compute": {
+      "soc": "Broadcom BCM2711",
+      "cpu": {
+        "architecture": "arm64",
+        "isa": "ARMv8-A",
+        "cores": 4,
+        "model": "Cortex-A72",
+        "base_frequency_mhz": 1500,
+        "max_frequency_mhz": 1500,
+        "dvfs_supported": true
+      },
+      "ram": {
+        "type": "LPDDR4",
+        "size_gb": 4,
+        "size_mb": 4096
+      },
+      "gpu": {
+        "present": true,
+        "model": "VideoCore VI",
+        "memory_mb": 512,
+        "cuda_supported": false
+      },
+      "npu": {
+        "present": false,
+        "model": null,
+        "tops": null
+      },
+      "fpga": {
+        "present": false,
+        "model": null,
+        "logic_units": null
+      },
+      "storage": {
+        "total_gb": 128,
+        "type": "sdcard"
+      }
+    },
+    "connectivity": {
+      "ethernet": {
+        "present": true,
+        "max_speed_mbps": 1000
+      },
+      "wifi": {
+        "present": true,
+        "standards": ["802.11b", "802.11g", "802.11n", "802.11ac"],
+        "bands": ["2.4GHz", "5GHz"],
+        "wifi_max_mbps": 200
+      },
+      "bluetooth": {
+        "present": true,
+        "version": "5.0",
+        "ble": true,
+        "external": false,
+        "ble_max_stable_connections": 3,
+        "ble_aggregate_throughput_kbps": 700
+      }
+    },
+    "power": {
+      "input": "5V USB-C",
+      "recommended_current_a": 3.0,
+      "typical_power_w": 3.5,
+      "max_power_w": 7.5
+    },
+    "roles": ["edge_collector", "preprocessing", "gateway"],
+    "notes": "Keep passive cooling above sustained BLE + CPU workloads; monitor thermal throttling around 80C."
+  },
+  "raspberry_pi_3b_4gb": {
+    "id": "raspberry_pi_3b_4gb",
+    "description": "Edge node based on Raspberry Pi 3 Model B for BLE acquisition and local preprocessing",
+    "max_temp": 80.0,
+    "max_network_speed": 95.0,
+    "board": {
+      "vendor": "Raspberry Pi Foundation",
+      "model": "Raspberry Pi 3 Model B",
+      "revision": "1.2",
+      "form_factor": "SBC"
+    },
+    "compute": {
+      "soc": "Broadcom BCM2837B0",
+      "cpu": {
+        "architecture": "arm64",
+        "isa": "ARMv8-A",
+        "cores": 4,
+        "model": "Cortex-A53",
+        "base_frequency_mhz": 1200,
+        "max_frequency_mhz": 1200,
+        "dvfs_supported": true
+      },
+      "ram": {
+        "type": "LPDDR4",
+        "size_gb": 4,
+        "size_mb": 4096
+      },
+      "gpu": {
+        "present": true,
+        "model": "VideoCore IV",
+        "memory_mb": 256,
+        "cuda_supported": false
+      },
+      "npu": {
+        "present": false,
+        "model": null,
+        "tops": null
+      },
+      "fpga": {
+        "present": false,
+        "model": null,
+        "logic_units": null
+      },
+      "storage": {
+        "total_gb": 64,
+        "type": "sdcard"
+      }
+    },
+    "connectivity": {
+      "ethernet": {
+        "present": true,
+        "max_speed_mbps": 100
+      },
+      "wifi": {
+        "present": true,
+        "standards": ["802.11b", "802.11g", "802.11n"],
+        "bands": ["2.4GHz"],
+        "wifi_max_mbps": 72
+      },
+      "bluetooth": {
+        "present": true,
+        "version": "4.2",
+        "ble": true,
+        "external": false,
+        "ble_max_stable_connections": 2,
+        "ble_aggregate_throughput_kbps": 300
+      }
+    },
+    "power": {
+      "input": "5V USB-C",
+      "recommended_current_a": 3.0,
+      "typical_power_w": 3.5,
+      "max_power_w": 7.5
+    },
+    "roles": ["edge_collector", "preprocessing", "gateway"],
+    "notes": "Keep passive cooling above sustained BLE + CPU workloads; monitor thermal throttling around 80C."
+  },
+  "lenovo_v15_g2_alc": {
+    "id": "lenovo_v15_g2_alc",
+    "description": "Edge node based on Lenovo V15 G2 ALC laptop for BLE/Wi-Fi acquisition and local preprocessing",
+    "max_temp": 95.0,
+    "max_network_speed": 1000.0,
+    "board": {
+      "vendor": "Lenovo",
+      "model": "V15 G2 ALC",
+      "revision": "unknown",
+      "form_factor": "Laptop"
+    },
+    "compute": {
+      "soc": "AMD Ryzen 5 5500U with Radeon Graphics",
+      "cpu": {
+        "architecture": "x86_64",
+        "isa": "x86-64",
+        "cores": 6,
+        "threads": 12,
+        "model": "AMD Ryzen 5 5500U",
+        "base_frequency_mhz": 2100,
+        "max_frequency_mhz": 4056,
+        "dvfs_supported": true
+      },
+      "ram": {
+        "type": "DDR4",
+        "size_gb": 10,
+        "size_mb": 9804
+      },
+      "gpu": {
+        "present": true,
+        "model": "AMD Radeon Graphics (integrated)",
+        "memory_mb": 2048,
+        "cuda_supported": false
+      },
+      "npu": {
+        "present": false,
+        "model": null,
+        "tops": null
+      },
+      "fpga": {
+        "present": false,
+        "model": null,
+        "logic_units": null
+      },
+      "storage": {
+        "total_gb": 512,
+        "type": "ssd"
+      }
+    },
+    "connectivity": {
+      "ethernet": {
+        "present": true,
+        "max_speed_mbps": 1000,
+        "chipset": "Realtek RTL8111/8168/8411"
+      },
+      "wifi": {
+        "present": true,
+        "standards": ["802.11b", "802.11g", "802.11n", "802.11ac"],
+        "bands": ["2.4GHz", "5GHz"],
+        "wifi_max_mbps": 780,
+        "chipset": "Realtek RTL8822CE"
+      },
+      "bluetooth": {
+        "present": true,
+        "version": "5.1",
+        "ble": true,
+        "external": false,
+        "ble_max_stable_connections": 5,
+        "ble_aggregate_throughput_kbps": 800
+      }
+    },
+    "power": {
+      "input": "65W AC adapter",
+      "recommended_current_a": 3.25,
+      "typical_power_w": 15.0,
+      "max_power_w": 65.0
+    },
+    "roles": ["edge_collector", "preprocessing", "gateway"],
+    "notes": "RAM size is detected as OS-available memory. max_temp is a conservative operational threshold for sustained workloads, not a silicon TjMax value."
+  }
+}

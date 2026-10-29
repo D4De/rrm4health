@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAMPAIGN | Framework</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-base-200">
+<div class="navbar bg-base-100 shadow-md px-4">
+    <div class="flex-1">
+        <div class="flex items-center gap-3">
+            <div class="avatar">
+                <div class="w-10 rounded-full bg-base-200 flex items-center justify-center overflow-hidden">
+                    <img src="/images/sensor-icon.svg" alt="BSN" class="w-6 h-6"/>
+                </div>
+            </div>
+            <div>
+                <a href="/" class="text-lg font-bold hover:text-primary">CAMPAIGN</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-none">
+        <form th:action="@{/logout}" method="post" class="w-full">
+            <button type="submit" class="btn btn-error btn-sm">Logout</button>
+        </form>
+    </div>
+</div>
+
+<main class="max-w-5xl mx-auto p-4 lg:p-6">
+    <div class="text-sm breadcrumbs mb-4">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li>Framework</li>
+        </ul>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h1 class="card-title text-2xl">Pagina Framework</h1>
+            <p class="text-gray-500">Questa e la nuova pagina framework.</p>
+
+            <!-- Connection Management Section -->
+            <div class="divider my-6"></div>
+
+            <h2 class="text-xl font-bold mb-4">Connection Management</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-semibold">RRM Global IP</span>
+                    </label>
+                    <input type="text" id="rrmIp" name="rrmIp" class="input input-bordered" placeholder="192.168.1.78" th:value="${rrmIp}" />
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-semibold">Port</span>
+                    </label>
+                    <input type="number" id="rrmPort" name="rrmPort" class="input input-bordered" placeholder="41798" th:value="${rrmPort}" />
+                </div>
+
+                <div class="form-control flex flex-col justify-end">
+                    <button id="connectBtn" class="btn btn-primary" onclick="connectToRRM()">Connect</button>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div id="statusBadge" class="badge badge-error gap-2">
+                    <span class="w-2 h-2 bg-current rounded-full"></span>
+                    Status: Disconnect
+                </div>
+                <button id="disconnectBtn" class="btn btn-outline btn-sm" onclick="disconnectFromRRM()" disabled>Disconnect</button>
+            </div>
+
+            <!-- End Connection Management Section -->
+
+            <div class="card-actions justify-end mt-6">
+                <a href="/" class="btn btn-outline btn-sm">Torna alla Home</a>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    // Initialize IP with the private network address from backend
+    document.addEventListener('DOMContentLoaded', function() {
+        //detectPrivateIP();
+    });
+
+    function detectPrivateIP() {
+        fetch('/api/v1/rrm/connection/local-ip')
+            .then(response => response.json())
+            .then(data => {
+                if (data.ip) {
+                    document.getElementById('rrmIp').value = data.ip;
+                }
+            })
+            .catch(error => {
+                console.warn('Impossibile rilevare l\'IP privato:', error);
+                // Fallback: lascia il placeholder
+            });
+    }
+
+    function connectToRRM() {
+        const ip = document.getElementById('rrmIp').value.trim();
+        const port = document.getElementById('rrmPort').value.trim();
+
+        if (!ip) {
+            alert('Inserisci l\'indirizzo IP');
+            return;
+        }
+        if (!port || port < 1024 || port > 65535) {
+            alert('Inserisci una porta valida (1024-65535)');
+            return;
+        }
+
+        const connectBtn = document.getElementById('connectBtn');
+        connectBtn.disabled = true;
+        connectBtn.textContent = 'Connessione...';
+
+        fetch('/api/v1/rrm/connection/connect', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                ip: ip,
+                port: parseInt(port)
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                updateStatus(true, `${ip}:${port}`);
+                connectBtn.style.display = 'none';
+                document.getElementById('disconnectBtn').disabled = false;
+                // dopo il connect richiedi subito policy e applicazioni
+                refreshData();
+                return response.text();
+            } else {
+                return response.text().then(text => { throw new Error(text); });
+            }
+        })
+        .catch(error => {
+            alert('Errore di connessione: ' + error);
+            connectBtn.disabled = false;
+            connectBtn.textContent = 'Connect';
+        });
+    }
+
+    function disconnectFromRRM() {
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        disconnectBtn.disabled = true;
+        disconnectBtn.textContent = 'Disconnessione...';
+
+        fetch('/api/v1/rrm/connection/disconnect', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                updateStatus(false);
+                document.getElementById('connectBtn').style.display = 'block';
+                document.getElementById('connectBtn').disabled = false;
+                document.getElementById('connectBtn').textContent = 'Connect';
+                return response.text();
+            } else {
+                return response.text().then(text => { throw new Error(text); });
+            }
+        })
+        .catch(error => {
+            alert('Errore di disconnessione: ' + error);
+            disconnectBtn.disabled = false;
+            disconnectBtn.textContent = 'Disconnect';
+        });
+    }
+
+    function updateStatus(connected, address = '') {
+        const statusBadge = document.getElementById('statusBadge');
+        const connectBtn = document.getElementById('connectBtn');
+        
+        if (connected) {
+            statusBadge.className = 'badge badge-success gap-2';
+            statusBadge.innerHTML = '<span class="w-2 h-2 bg-current rounded-full"></span> Status: Connected (' + address + ')';
+            connectBtn.disabled = true;
+        } else {
+            statusBadge.className = 'badge badge-error gap-2';
+            statusBadge.innerHTML = '<span class="w-2 h-2 bg-current rounded-full"></span> Status: Disconnect';
+            connectBtn.disabled = false;
+        }
+    }
+
+    // invia richieste al backend e logga le risposte (da adattare in base alla UI reale)
+    function refreshData() {
+        fetch('/api/v1/rrm/connection/policies')
+            .then(r => r.json())
+            .then(data => console.log('Policies:', data))
+            .catch(e => console.warn('Errore refresh policies', e));
+
+        fetch('/api/v1/rrm/connection/applications/descriptors')
+            .then(r => r.json())
+            .then(data => console.log('Applications:', data))
+            .catch(e => console.warn('Errore refresh applications', e));
+    }
+</script>
+</body>
+</html>

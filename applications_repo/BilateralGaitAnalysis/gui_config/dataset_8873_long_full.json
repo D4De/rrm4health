@@ -1,0 +1,23 @@
+{
+  "name": "Dataset 8873 - Long - Full",
+  "description": "Approximately five-minute walking trial for participant 8873, replayed at the dataset's native 204.8 Hz rate and processed in overlapping 20-second windows.",
+  "userargs": {
+    "imu_names": "dataset_left-dataset_right",
+    "sensor_positions": "left_foot-right_foot",
+    "adapter": "hci0",
+    "acquisition_mode": "file",
+    "input_path": "dataset/SensorPositionComparison2019-v1.0.0-beta",
+    "subject_id": "8873",
+    "trial_id": "long",
+    "campaign_name": "dataset_8873_long",
+    "initial_counter": "0",
+    "sampling_frequency_hz": "204.8",
+    "window_duration_s": "20",
+    "window_overlap_s": "2",
+    "lowpass_cutoff_hz": "20",
+    "lightweight_mode": "false",
+    "barth_max_cost": "4.0",
+    "minimum_complete_strides": "3",
+    "output_path": "output/8873_long_full/"
+  }
+}

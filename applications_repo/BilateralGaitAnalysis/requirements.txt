@@ -1,0 +1,11 @@
+# These two pins keep the loader compatible with the framework's existing
+# TensorFlow 2.12 installation, which requires NumPy below 1.24.
+numpy==1.23.5
+imucal==2.4.0
+numba==0.57.1
+llvmlite==0.40.1
+gaitmap==2.6.0
+gaitmap_mad==2.6.0
+gaitmap-datasets==0.14.0
+# The distribution is named `pyzmq`; application code imports it as `zmq`.
+pyzmq==26.3.0
