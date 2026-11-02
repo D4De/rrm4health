@@ -18,8 +18,18 @@ imu/
 │   ├── LSM9DS1_AAAC.cpp
 │   └── arduino_secrets.h
 ├── nano33rev2/
-│   ├── nano33BLErev2.ino           # Nano 33 BLE Sense Rev2, BLE
-│   └── BMI270_BMM150_AAAC/         # Sensor library and bundled drivers
+│   ├── nano33rev2.ino            # Nano 33 BLE Sense Rev2, BLE
+│   ├── Arduino_BMI270_BMM150_AAAC.h  # Sensor library and bundled drivers
+│   ├── BMI270_AAAC.cpp               
+│   ├── BoschSensorClass_AAAC.h   
+│   ├── library.properties          
+│   ├── src          
+│   │   └── utilities              
+│   │        └── BMI270-Sensor-API/
+│   │        └── BMM150-Sensor-API/
+│   └── utilities              
+│        └── BMI270-Sensor-API/
+│        └── BMM150-Sensor-API/
 ├── nano33IoT/
 │   ├── nano33IoT.ino               # Nano 33 IoT, BLE and Wi-Fi code
 │   └── Arduino_LSM6DS3/            # Bundled sensor library

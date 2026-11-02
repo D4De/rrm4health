@@ -11,3 +11,5 @@ output/
 /.run_processes/
 /LOG_processes/
 webapp/target
+.DS_Store
+
